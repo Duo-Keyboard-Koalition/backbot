@@ -199,9 +199,9 @@ class GenerateVideoTool(Tool):
                     "description": "Description of the video to generate",
                 },
                 "duration": {
-                    "type": "integer",
-                    "description": "Duration in seconds (4, 6, or 8, default: 8)",
-                    "enum": [4, 6, 8],
+                    "type": "string",
+                    "description": "Duration in seconds (default: 8)",
+                    "enum": ["4", "6", "8"],
                 },
                 "aspect": {
                     "type": "string",

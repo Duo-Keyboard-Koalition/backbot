@@ -102,3 +102,78 @@ Reply directly with text for conversations. Only use the 'message' tool to send 
                 parts.append(f"## {filename}\n\n{content}")
 
         return "\n\n".join(parts) if parts else ""
+
+    def build_messages(
+        self,
+        history: list[dict],
+        current_message: str,
+        media: list[str] | None = None,
+        channel: str | None = None,
+        chat_id: str | None = None,
+    ) -> list[dict]:
+        """Build messages list for the agent loop.
+
+        Args:
+            history: Previous conversation history
+            current_message: Current user message
+            media: Optional media attachments
+            channel: Channel identifier
+            chat_id: Chat identifier
+
+        Returns:
+            List of message dicts ready for the LLM
+        """
+        messages = list(history)
+
+        # Add runtime context as a system message if channel info provided
+        if channel and chat_id:
+            runtime_context = self._build_runtime_context(channel, chat_id)
+            # Insert runtime context before the user message
+            messages.append({
+                "role": "user",
+                "content": f"{runtime_context}\n\n{current_message}"
+            })
+        else:
+            messages.append({
+                "role": "user",
+                "content": current_message
+            })
+
+        return messages
+
+    def add_assistant_message(
+        self,
+        messages: list[dict],
+        content: str | None,
+        tool_calls: list[dict] | None = None,
+        reasoning_content: str | None = None,
+        thinking_blocks: list | None = None,
+    ) -> list[dict]:
+        """Add an assistant message to the messages list."""
+        msg: dict = {"role": "assistant"}
+        if content:
+            msg["content"] = content
+        if tool_calls:
+            msg["tool_calls"] = tool_calls
+        if reasoning_content:
+            msg["reasoning_content"] = reasoning_content
+        if thinking_blocks:
+            msg["thinking_blocks"] = thinking_blocks
+        messages.append(msg)
+        return messages
+
+    def add_tool_result(
+        self,
+        messages: list[dict],
+        tool_call_id: str,
+        tool_name: str,
+        result: str,
+    ) -> list[dict]:
+        """Add a tool result to the messages list."""
+        messages.append({
+            "role": "tool",
+            "name": tool_name,
+            "content": result,
+            "tool_call_id": tool_call_id,
+        })
+        return messages

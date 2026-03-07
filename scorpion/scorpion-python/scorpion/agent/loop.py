@@ -18,6 +18,7 @@ from scorpion.agent.subagent import SubagentManager
 from scorpion.agent.tools.creative import GenerateImageTool, GenerateMusicTool, GenerateVideoTool
 from scorpion.agent.tools.cron import CronTool
 from scorpion.agent.tools.filesystem import EditFileTool, ListDirTool, ReadFileTool, WriteFileTool
+from scorpion.agent.tools.manage import ManageAgentsTool
 from scorpion.agent.tools.message import MessageTool
 from scorpion.agent.tools.registry import ToolRegistry
 from scorpion.agent.tools.shell import ExecTool
@@ -125,6 +126,7 @@ class AdkAgentLoop:
         self.tools.register(WebFetchTool())
         self.tools.register(MessageTool(send_callback=self.bus.publish_outbound))
         self.tools.register(SpawnTool(manager=self.subagents))
+        self.tools.register(ManageAgentsTool(manager=self.subagents))
         for cls in (GenerateImageTool, GenerateMusicTool):
             self.tools.register(cls())
         self.tools.register(GenerateVideoTool(subagent_manager=self.subagents))
@@ -155,7 +157,7 @@ class AdkAgentLoop:
 
     def _set_tool_context(self, channel: str, chat_id: str, message_id: str | None = None) -> None:
         """Update context for all tools that need routing info."""
-        for name in ("message", "spawn", "cron", "generate_video"):
+        for name in ("message", "spawn", "cron", "generate_video", "manage_agents"):
             if tool := self.tools.get(name):
                 if hasattr(tool, "set_context"):
                     tool.set_context(channel, chat_id, *([message_id] if name == "message" else []))

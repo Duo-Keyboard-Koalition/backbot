@@ -16,6 +16,7 @@ from scorpion.adk.tools import SUBAGENT_TOOLS, set_runtime_refs
 from scorpion.bus.events import InboundMessage
 from scorpion.bus.queue import MessageBus
 from scorpion.config.schema import FLASH_MODEL
+from datetime import datetime
 from scorpion.providers.base import LLMProvider
 
 
@@ -47,7 +48,7 @@ class SubagentManager:
         self.brave_api_key = brave_api_key
         self.exec_config = exec_config or ExecToolConfig()
         self.restrict_to_workspace = restrict_to_workspace
-        self._running_tasks: dict[str, asyncio.Task[None]] = {}
+        self._running_tasks: dict[str, dict[str, Any]] = {}  # task_id -> {task, label, description, start_time}
         self._session_tasks: dict[str, set[str]] = {}  # session_key -> {task_id, ...}
         self._session_service = InMemorySessionService()
 
@@ -67,7 +68,12 @@ class SubagentManager:
         bg_task = asyncio.create_task(
             self._run_subagent(task_id, task, display_label, origin)
         )
-        self._running_tasks[task_id] = bg_task
+        self._running_tasks[task_id] = {
+            "task": bg_task,
+            "label": display_label,
+            "description": task,
+            "start_time": datetime.now().isoformat(),
+        }
         if session_key:
             self._session_tasks.setdefault(session_key, set()).add(task_id)
 
@@ -258,16 +264,44 @@ Always include a brief description of what was generated in the message content.
 
     async def cancel_by_session(self, session_key: str) -> int:
         """Cancel all subagents for the given session. Returns count cancelled."""
-        tasks = [
-            self._running_tasks[tid]
-            for tid in self._session_tasks.get(session_key, [])
-            if tid in self._running_tasks and not self._running_tasks[tid].done()
-        ]
-        for t in tasks:
-            t.cancel()
+        task_ids = list(self._session_tasks.get(session_key, []))
+        tasks = []
+        for tid in task_ids:
+            if tid in self._running_tasks:
+                t = self._running_tasks[tid]["task"]
+                if not t.done():
+                    t.cancel()
+                    tasks.append(t)
         if tasks:
             await asyncio.gather(*tasks, return_exceptions=True)
         return len(tasks)
+
+    def list_agents(self) -> str:
+        """Return a formatted string listing all active subagents."""
+        if not self._running_tasks:
+            return "No active subagents."
+        
+        lines = ["Active Subagents:"]
+        for tid, info in self._running_tasks.items():
+            start_time = info["start_time"]
+            label = info["label"]
+            lines.append(f"- [{tid}] {label} (Started: {start_time})")
+        return "\n".join(lines)
+
+    async def stop_agent(self, task_id: str) -> bool:
+        """Stop a specific subagent by ID. Returns True if stopped."""
+        if task_id not in self._running_tasks:
+            return False
+            
+        t = self._running_tasks[task_id]["task"]
+        if not t.done():
+            t.cancel()
+            try:
+                await t
+            except (asyncio.CancelledError, Exception):
+                pass
+            return True
+        return False
 
     def get_running_count(self) -> int:
         """Return the number of currently running subagents."""

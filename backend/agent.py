@@ -56,7 +56,7 @@ def parse_agent_response(
     if action_match:
         action = action_match.group(1).strip()
 
-    input_match = re.search(r"Action Input:\s*(\{.*?\})", response_text, re.DOTALL)
+    input_match = re.search(r"Action Input:\s*(\{.*\})", response_text, re.DOTALL)
     if input_match:
         try:
             action_input = json.loads(input_match.group(1))

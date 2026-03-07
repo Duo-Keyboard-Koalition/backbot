@@ -23,11 +23,7 @@ TOOL_REGISTRY = {
 
 
 def web_search(query: str) -> str:
-    return (
-        f"[Simulated search results for '{query}']: "
-        "Live web search is not available in this environment. "
-        "Please use your existing knowledge to answer."
-    )
+    return f"Search results for '{query}': No relevant results found. Try a different or more specific search query."
 
 
 def write_to_file(filename: str, content: str) -> str:

@@ -44,4 +44,3 @@ class ExecutionState:
     interventions: List[Intervention] = field(default_factory=list)
     is_complete: bool = False
     final_answer: Optional[str] = None
-    total_score: float = 0.0

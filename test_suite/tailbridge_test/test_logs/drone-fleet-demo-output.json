@@ -1,0 +1,196 @@
+{
+  "timestamp": "2026-03-08T05:15:04.007711",
+  "mission_id": "MISSION-1772961304",
+  "drones": {
+    "lead-drone": {
+      "id": "DRONE-LEAD-001",
+      "role": "lead",
+      "tailscale_ip": "100.76.142.10",
+      "local_ip": "172.29.0.2",
+      "battery": 100,
+      "position": {
+        "lat": 40.758,
+        "lon": -73.9855,
+        "alt": 200
+      },
+      "capabilities": [
+        "orchestrate",
+        "coordinate",
+        "task_assign",
+        "monitor"
+      ]
+    },
+    "scout-drone": {
+      "id": "DRONE-SCOUT-002",
+      "role": "scout",
+      "tailscale_ip": "100.89.156.23",
+      "local_ip": "172.29.0.3",
+      "battery": 95,
+      "position": {
+        "lat": 40.759,
+        "lon": -73.9845,
+        "alt": 150
+      },
+      "capabilities": [
+        "survey",
+        "mapping",
+        "reconnaissance"
+      ]
+    },
+    "worker-drone": {
+      "id": "DRONE-WORKER-003",
+      "role": "worker",
+      "tailscale_ip": "100.104.67.89",
+      "local_ip": "172.29.0.4",
+      "battery": 98,
+      "position": {
+        "lat": 40.757,
+        "lon": -73.9865,
+        "alt": 100
+      },
+      "capabilities": [
+        "delivery",
+        "transport",
+        "payload_carry"
+      ]
+    },
+    "relay-drone": {
+      "id": "DRONE-RELAY-004",
+      "role": "relay",
+      "tailscale_ip": "100.118.201.45",
+      "local_ip": "172.29.0.5",
+      "battery": 92,
+      "position": {
+        "lat": 40.7585,
+        "lon": -73.985,
+        "alt": 180
+      },
+      "capabilities": [
+        "relay",
+        "communication",
+        "signal_boost"
+      ]
+    }
+  },
+  "task_logs": {
+    "lead-drone": {
+      "role": "lead",
+      "ip": "100.76.142.10",
+      "tasks": [
+        {
+          "id": "TASK-001",
+          "type": "survey",
+          "priority": "high",
+          "description": "Conduct aerial survey of downtown district"
+        },
+        {
+          "id": "TASK-002",
+          "type": "deliver",
+          "priority": "critical",
+          "description": "Deliver emergency medical supplies to Hospital Zone A"
+        },
+        {
+          "id": "TASK-003",
+          "type": "patrol",
+          "priority": "medium",
+          "description": "Maintain communication relay between fleet and base"
+        }
+      ],
+      "messages": [
+        {
+          "from": "lead-drone",
+          "to": "all",
+          "type": "status_report",
+          "content": "MISSION COMPLETE. Mission ID: MISSION-1772961304. All objectives achieved. Survey: 100%. Delivery: 100%. Relay: Operational. Fleet returning to base. Outstanding work: None.",
+          "task_id": "",
+          "timestamp": "2026-03-08T05:15:04.007711"
+        }
+      ]
+    },
+    "scout-drone": {
+      "role": "scout",
+      "ip": "100.89.156.23",
+      "tasks": [],
+      "messages": [
+        {
+          "from": "scout-drone",
+          "to": "lead-drone",
+          "type": "status_report",
+          "content": "Lead Drone, Scout reporting. Survey 45% complete. Coverage: 1.1 sq km. Weather conditions optimal. Battery at 78%. ETA 22 minutes.",
+          "task_id": "TASK-001",
+          "timestamp": "2026-03-08T05:15:04.007711"
+        },
+        {
+          "from": "scout-drone",
+          "to": "worker-drone",
+          "type": "coordination",
+          "content": "Worker Drone, Scout here. I've identified optimal landing zone at Grid C-7 during my survey. Coordinates transmitted. Suitable for your delivery. Over.",
+          "task_id": "TASK-001",
+          "timestamp": "2026-03-08T05:15:04.007711"
+        },
+        {
+          "from": "scout-drone",
+          "to": "lead-drone",
+          "type": "status_report",
+          "content": "Lead Drone, Scout reporting TASK-001 COMPLETE. Full aerial survey completed. 2.5 sq km mapped. 3D model uploaded to base. Battery at 62%. Returning to base.",
+          "task_id": "TASK-001",
+          "timestamp": "2026-03-08T05:15:04.007711"
+        }
+      ]
+    },
+    "worker-drone": {
+      "role": "worker",
+      "ip": "100.104.67.89",
+      "tasks": [],
+      "messages": [
+        {
+          "from": "worker-drone",
+          "to": "lead-drone",
+          "type": "status_report",
+          "content": "Lead Drone, Worker reporting. Departed base with payload 'Medical Supplies Kit #A-47'. En route to Hospital Zone A. Battery at 92%. ETA 12 minutes.",
+          "task_id": "TASK-002",
+          "timestamp": "2026-03-08T05:15:04.007711"
+        },
+        {
+          "from": "worker-drone",
+          "to": "scout-drone",
+          "type": "coordination",
+          "content": "Scout Drone, Worker copying. Grid C-7 coordinates received. Adjusting route. Excellent intel. Will confirm landing on approach. Out.",
+          "task_id": "TASK-002",
+          "timestamp": "2026-03-08T05:15:04.007711"
+        },
+        {
+          "from": "worker-drone",
+          "to": "lead-drone",
+          "type": "status_report",
+          "content": "Lead Drone, Worker reporting TASK-002 COMPLETE. Medical supplies delivered to Hospital Zone A. Landing zone Grid C-7 performed flawlessly. Battery at 71%. Returning to base.",
+          "task_id": "TASK-002",
+          "timestamp": "2026-03-08T05:15:04.007711"
+        }
+      ]
+    },
+    "relay-drone": {
+      "role": "relay",
+      "ip": "100.118.201.45",
+      "tasks": [],
+      "messages": [
+        {
+          "from": "relay-drone",
+          "to": "lead-drone",
+          "type": "status_report",
+          "content": "Lead Drone, Relay reporting. Stationed at coordinates 40.7580, -73.9855, altitude 150m. Signal strength excellent. All fleet communications routing through relay. Battery at 88%.",
+          "task_id": "TASK-003",
+          "timestamp": "2026-03-08T05:15:04.007711"
+        },
+        {
+          "from": "relay-drone",
+          "to": "lead-drone",
+          "type": "status_report",
+          "content": "Lead Drone, Relay reporting. All fleet communications maintained throughout mission. Zero packet loss. Battery at 76%. Continuing patrol.",
+          "task_id": "TASK-003",
+          "timestamp": "2026-03-08T05:15:04.007711"
+        }
+      ]
+    }
+  }
+}

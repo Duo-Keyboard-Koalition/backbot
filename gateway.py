@@ -8,6 +8,7 @@ import asyncio
 import json
 import os
 import sys
+import signal
 import websockets
 from pathlib import Path
 from dotenv import load_dotenv
@@ -120,19 +121,31 @@ async def handler(websocket, default_agent):
         print(f"[-] Client disconnected. Total: {len(clients)}")
 
 
+
 async def run_server(host=HOST, port=PORT):
-    """Start the WebSocket server. Can be used as an asyncio task."""
     default_agent = make_agent()
-    print(f"[*] Backclaw WebSocket Gateway")
-    print(f"[*] Mode: {MODE}")
-    print(f"[*] Listening on ws://{host}:{port}")
+    print(f"[*] Backclaw WebSocket Gateway listening on ws://{host}:{port}")
+
+    stop_event = asyncio.Event()
+
+    # Define a clean shutdown function
+    def shutdown():
+        print("\n[*] Shutting down...")
+        stop_event.set()
+
+    # Register signals for stop/restart commands
+    if sys.platform != "win32":
+        loop = asyncio.get_running_loop()
+        for sig in (signal.SIGTERM, signal.SIGINT):
+            loop.add_signal_handler(sig, shutdown)
+    # Note: On Windows, add_signal_handler is not supported for ProactorEventLoop.
+    # Foreground SIGINT (Ctrl+C) is handled by the try/except in __main__.
 
     async def _handler(ws):
         await handler(ws, default_agent)
 
     async with websockets.serve(_handler, host, port):
-        await asyncio.Future()  # run forever
-
+        await stop_event.wait()  # Wait until stop_event is set
 
 if __name__ == "__main__":
     try:

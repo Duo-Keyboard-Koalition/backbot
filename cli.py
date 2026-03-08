@@ -74,15 +74,70 @@ def gateway():
     pass
 
 @gateway.command("start")
-def gateway_start():
-    """Start the Backclaw WebSocket gateway (foreground, Ctrl+C to stop)"""
-    import asyncio
-    from gateway import run_server
-    click.echo("Starting Backclaw gateway... (Press Ctrl+C to stop)")
-    try:
+@click.option('--daemon', is_flag=True, help="Run in the background")
+def gateway_start(daemon):
+    """Start the Backclaw WebSocket gateway"""
+    ensure_config_dir()
+    
+    if PID_FILE.exists():
+        click.echo("⚠️ Gateway is already running (PID file exists).")
+        return
+
+    if daemon:
+        # Launch as a detached background process
+        gateway_script = Path(__file__).parent / "gateway.py"
+        log_file = open(OPENCLAW_DIR / "gateway.log", "a")
+        
+        env = os.environ.copy()
+        env["PYTHONUTF8"] = "1"
+        
+        p = subprocess.Popen(
+            [sys.executable, str(gateway_script)],
+            stdout=log_file,
+            stderr=log_file,
+            cwd=str(Path(__file__).parent),
+            env=env,
+            start_new_session=True # Detach from terminal
+        )
+        PID_FILE.write_text(str(p.pid))
+        click.echo(f"🚀 Gateway started in background (PID: {p.pid})")
+    else:
+        # Normal foreground execution
+        from gateway import run_server
+        import asyncio
         asyncio.run(run_server())
-    except KeyboardInterrupt:
-        click.echo("\n[*] Gateway stopped.")
+
+@gateway.command("stop")
+def gateway_stop():
+    """Stop the background gateway process"""
+    if not PID_FILE.exists():
+        click.echo("❌ Gateway is not running.")
+        return
+
+    pid = int(PID_FILE.read_text())
+    try:
+        if sys.platform == "win32":
+            # On Windows, taskkill is more reliable for stopping background processes
+            subprocess.run(["taskkill", "/F", "/T", "/PID", str(pid)], capture_output=True)
+        else:
+            # Send SIGTERM for graceful shutdown on Unix
+            os.kill(pid, signal.SIGTERM)
+        
+        if PID_FILE.exists():
+            PID_FILE.unlink()
+        click.echo(f"🛑 Gateway (PID: {pid}) stopped.")
+    except (ProcessLookupError, OSError):
+        click.echo("⚠️ Process not found, cleaning up stale PID file.")
+        if PID_FILE.exists():
+            PID_FILE.unlink()
+
+@gateway.command("restart")
+@click.pass_context
+def gateway_restart(ctx):
+    """Restart the gateway"""
+    ctx.invoke(gateway_stop)
+    time.sleep(1)
+    ctx.invoke(gateway_start, daemon=True)
 
 
 # ============ TUI ============

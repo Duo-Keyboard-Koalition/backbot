@@ -1,5 +1,5 @@
-"""Wire all DarCI tools into the Scorpion AdkAgentLoop."""
-from scorpion.agent.loop import AdkAgentLoop
+"""Wire all DarCI tools into the DarCI AdkAgentLoop."""
+from darci.agent.loop import AdkAgentLoop
 
 from darci.config import DarciConfig
 from darci.state.store import TaskStore

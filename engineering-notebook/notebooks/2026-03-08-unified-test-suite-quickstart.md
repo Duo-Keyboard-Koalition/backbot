@@ -40,7 +40,7 @@ mkdir -p engineering-notebook/templates
 ### Step 1.2: Initialize Python Test Dependencies
 
 ```bash
-cd darci/scorpion/darci-python
+cd darci/darci/darci-python
 
 # Install test dependencies
 pip install pytest pytest-asyncio pytest-cov pytest-mock

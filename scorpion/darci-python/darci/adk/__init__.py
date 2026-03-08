@@ -1,1 +1,0 @@
-"""Scorpion ADK module."""

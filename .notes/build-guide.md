@@ -43,7 +43,7 @@ uvicorn backend.main:app --port 8000 --reload
 Scorpion is the agent framework. DarCI = Scorpion + DARCI tools + DARCI system prompt.
 
 ```bash
-cd scorpion/scorpion-python
+cd scorpion/darci-python
 pip install -e .
 
 # First-time setup

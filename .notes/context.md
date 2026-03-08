@@ -24,7 +24,7 @@ Performed full read of backend/, scorpion/, tailbridge/, and darci-brainstorm/. 
 - Threshold: risk_score >= 0.5 triggers intervention
 - Model: gemini-2.0-flash (env: GEMINI_FLASH_MODEL)
 
-**Scorpion Agent Framework (scorpion/scorpion-python/)**
+**Scorpion Agent Framework (scorpion/darci-python/)**
 - Core class: AdkAgentLoop (perceive → think → act)
 - Event-driven: MessageBus pub/sub with InboundMessage/OutboundMessage
 - Tools: JSON-schema based, inherit from Tool base class

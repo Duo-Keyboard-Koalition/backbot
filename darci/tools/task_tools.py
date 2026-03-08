@@ -1,7 +1,7 @@
 """Task management tools for DarCI."""
 from typing import Any
 
-from scorpion.agent.tools.base import Tool
+from darci.agent.tools.base import Tool
 
 from darci.state.store import TaskStore
 

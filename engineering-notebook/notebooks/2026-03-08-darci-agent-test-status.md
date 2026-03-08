@@ -14,7 +14,7 @@ This document serves as the centralized context for brainstorming, tracking, and
 
 ## Agent Implementations
 
-### 1. DarCI Python (`scorpion/darci-python/`)
+### 1. DarCI Python (`darci/darci-python/`)
 
 #### Core Components
 
@@ -53,7 +53,7 @@ This document serves as the centralized context for brainstorming, tracking, and
 
 ---
 
-### 2. DarCI Go (`scorpion/darci-go/`)
+### 2. DarCI Go (`darci/darci-go/`)
 
 #### Core Components
 
@@ -131,7 +131,7 @@ This document serves as the centralized context for brainstorming, tracking, and
 
 ## Proposed Test Structure
 
-### Python (`scorpion/darci-python/tests/`)
+### Python (`darci/darci-python/tests/`)
 
 ```
 tests/
@@ -162,7 +162,7 @@ tests/
     └── test_full_scenarios.py
 ```
 
-### Go (`scorpion/darci-go/`)
+### Go (`darci/darci-go/`)
 
 ```
 darci/
@@ -251,5 +251,5 @@ jobs:
 ## Related Documents
 
 - [[Agent Architecture](../../darci/workspace/SOUL.md)]
-- [[Tool Documentation](../../scorpion/darci-python/docs/)]
+- [[Tool Documentation](../../darci/darci-python/docs/)]
 - [[Communication Protocol](../../tailbridge/taila2a/docs/agent-communication.md)]

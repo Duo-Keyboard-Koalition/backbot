@@ -25,8 +25,8 @@ This document proposes a unified test suite and engineering notebook integration
 | Component | Location | Language | Test Framework | Coverage | Status |
 |-----------|----------|----------|----------------|----------|--------|
 | Tailbridge A2A | `test_suite/tailbridge_test/` | Go | testify | ~70% | ✅ Active |
-| DarCI Python | `darci/scorpion/darci-python/` | Python | None yet | 0% | 🔴 Missing |
-| DarCI Go | `darci/scorpion/darci-go/` | Go | None yet | 0% | 🔴 Missing |
+| DarCI Python | `darci/darci/darci-python/` | Python | None yet | 0% | 🔴 Missing |
+| DarCI Go | `darci/darci/darci-go/` | Go | None yet | 0% | 🔴 Missing |
 
 ### Engineering Notebook Landscape
 
@@ -639,7 +639,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd darci/scorpion/darci-python
+          cd darci/darci/darci-python
           pip install -e ".[dev]"
 
       - name: Run unit tests
@@ -670,13 +670,13 @@ jobs:
 
       - name: Run tests
         run: |
-          cd darci/scorpion/darci-go
+          cd darci/darci/darci-go
           go test -v -coverprofile=coverage.out ./...
 
       - name: Upload coverage
         uses: codecov/codecov-action@v3
         with:
-          files: ./darci/scorpion/darci-go/coverage.out
+          files: ./darci/darci/darci-go/coverage.out
           flags: darci-go
 
   test-tailbridge:

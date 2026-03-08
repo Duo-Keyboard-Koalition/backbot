@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Sentinel AI - CLI Tools
+Backboard IO - CLI Tools
 Python CLI for Backboard AI Agent Management
 """
 
@@ -29,10 +29,31 @@ def get_client():
 
 
 @click.group()
-@click.version_option(version="1.0.0", prog_name="sentinel")
+@click.version_option(version="1.0.0", prog_name="backboard")
 def cli():
-    """Sentinel AI - Backboard AI Agent CLI"""
+    """Backboard IO - Backboard AI Agent CLI"""
     pass
+
+
+# ============ GATEWAY ============
+
+@cli.group()
+def gateway():
+    """Gateway management commands"""
+    pass
+
+
+@gateway.command("run")
+def gateway_run():
+    """Start the Backboard IO WebSocket gateway"""
+    import subprocess
+    import sys
+    import os
+    
+    click.echo("🚀 Starting Backboard IO WebSocket Gateway...")
+    # Run gateway.py as a subprocess
+    gateway_path = os.path.join(os.path.dirname(__file__), "gateway.py")
+    subprocess.run([sys.executable, gateway_path])
 
 
 # ============ AGENTS ============
@@ -47,7 +68,7 @@ def agents():
 @click.option("--json", "as_json", is_flag=True, help="Output as JSON")
 def agents_list(as_json):
     """List all agents"""
-    click.echo("🤖 Fetching agents...")
+    click.echo("Fetching agents...")
     
     # Simulated response for local testing
     agents_data = {
@@ -76,7 +97,7 @@ def agents_list(as_json):
 @click.option("--json", "as_json", is_flag=True, help="Output as JSON")
 def agents_create(name, instructions, description, as_json):
     """Create a new agent"""
-    click.echo(f"✨ Creating agent '{name}'...")
+    click.echo(f"Creating agent '{name}'...")
     
     # Simulated response
     agent_data = {
@@ -90,7 +111,7 @@ def agents_create(name, instructions, description, as_json):
     if as_json:
         click.echo(json.dumps(agent_data, indent=2))
     else:
-        click.echo(f"\n✅ Agent created!")
+        click.echo(f"\n[OK] Agent created!")
         click.echo(f"  ID: {agent_data['id']}")
         click.echo(f"  Name: {agent_data['name']}")
         click.echo()
@@ -101,7 +122,7 @@ def agents_create(name, instructions, description, as_json):
 @click.option("--json", "as_json", is_flag=True, help="Output as JSON")
 def agents_get(agent_id, as_json):
     """Get agent by ID"""
-    click.echo(f"🔍 Fetching agent {agent_id}...")
+    click.echo(f"Fetching agent {agent_id}...")
     
     # Simulated response
     agent_data = {
@@ -127,8 +148,8 @@ def agents_get(agent_id, as_json):
 @click.confirmation_option(prompt="Are you sure you want to delete this agent?")
 def agents_delete(agent_id):
     """Delete an agent"""
-    click.echo(f"🗑️  Deleting agent {agent_id}...")
-    click.echo("✅ Agent deleted!")
+    click.echo(f"Deleting agent {agent_id}...")
+    click.echo("[OK] Agent deleted!")
 
 
 # ============ TASKS ============
@@ -143,7 +164,7 @@ def tasks():
 @click.option("--json", "as_json", is_flag=True, help="Output as JSON")
 def tasks_list(as_json):
     """List all tasks"""
-    click.echo("📋 Fetching tasks...")
+    click.echo("Fetching tasks...")
     
     tasks_data = {
         "tasks": [
@@ -157,7 +178,7 @@ def tasks_list(as_json):
     else:
         click.echo("\n" + "=" * 70)
         for task in tasks_data.get("tasks", []):
-            status_icon = "✅" if task["status"] == "completed" else "⏳"
+            status_icon = "[OK]" if task["status"] == "completed" else "[..]"
             click.echo(f"  {status_icon} {task['id']} | Agent: {task['agent_id']} | {task['task'][:30]}")
         click.echo("=" * 70)
         click.echo()
@@ -170,7 +191,7 @@ def tasks_list(as_json):
 @click.option("--json", "as_json", is_flag=True, help="Output as JSON")
 def tasks_create(agent_id, task, priority, as_json):
     """Create a new task"""
-    click.echo(f"📝 Creating task for agent {agent_id}...")
+    click.echo(f"Creating task for agent {agent_id}...")
     
     task_data = {
         "id": f"task_{os.urandom(4).hex()}",
@@ -183,7 +204,7 @@ def tasks_create(agent_id, task, priority, as_json):
     if as_json:
         click.echo(json.dumps(task_data, indent=2))
     else:
-        click.echo(f"\n✅ Task created!")
+        click.echo(f"\n[OK] Task created!")
         click.echo(f"  ID: {task_data['id']}")
         click.echo(f"  Priority: {task_data['priority']}")
         click.echo()
@@ -194,7 +215,7 @@ def tasks_create(agent_id, task, priority, as_json):
 @click.option("--json", "as_json", is_flag=True, help="Output as JSON")
 def tasks_get(task_id, as_json):
     """Get task status"""
-    click.echo(f"🔍 Fetching task {task_id}...")
+    click.echo(f"Fetching task {task_id}...")
     
     task_data = {
         "id": task_id,
@@ -223,7 +244,7 @@ def tasks_get(task_id, as_json):
 @click.option("--json", "as_json", is_flag=True, help="Output as JSON")
 def execute(agent_id, task, as_json):
     """Execute a task and wait for result"""
-    click.echo(f"⚡ Executing task on agent {agent_id}...")
+    click.echo(f"Executing task on agent {agent_id}...")
     
     # Simulated response
     result_data = {
@@ -238,7 +259,7 @@ def execute(agent_id, task, as_json):
         click.echo(json.dumps(result_data, indent=2))
     else:
         click.echo("\n" + "=" * 50)
-        click.echo(f"✅ Execution complete!")
+        click.echo(f"[OK] Execution complete!")
         click.echo(f"  Result: {result_data['result']}")
         click.echo("=" * 50)
         click.echo()
@@ -253,7 +274,7 @@ def execute(agent_id, task, as_json):
 @click.option("--json", "as_json", is_flag=True, help="Output as JSON")
 def chat(agent_id, message, conversation_id, as_json):
     """Send a chat message to an agent"""
-    click.echo(f"💬 Sending message to agent {agent_id}...")
+    click.echo(f"Sending message to agent {agent_id}...")
     
     response_data = {
         "message": f"I received: '{message}'",
@@ -264,7 +285,7 @@ def chat(agent_id, message, conversation_id, as_json):
         click.echo(json.dumps(response_data, indent=2))
     else:
         click.echo("\n" + "=" * 50)
-        click.echo(f"🤖 Agent: {response_data['message']}")
+        click.echo(f"Agent: {response_data['message']}")
         click.echo(f"  Conversation ID: {response_data['conversation_id']}")
         click.echo("=" * 50)
         click.echo()
@@ -285,12 +306,12 @@ def tools():
 @click.option("--json", "as_json", is_flag=True, help="Output as JSON")
 def tools_register(name, schema, description, as_json):
     """Register a new tool"""
-    click.echo(f"🔧 Registering tool '{name}'...")
+    click.echo(f"Registering tool '{name}'...")
     
     try:
         schema_obj = json.loads(schema)
     except json.JSONDecodeError:
-        click.echo("❌ Invalid JSON schema")
+        click.echo("[ERROR] Invalid JSON schema")
         return
     
     tool_data = {
@@ -303,7 +324,7 @@ def tools_register(name, schema, description, as_json):
     if as_json:
         click.echo(json.dumps(tool_data, indent=2))
     else:
-        click.echo(f"\n✅ Tool registered!")
+        click.echo(f"\n[OK] Tool registered!")
         click.echo(f"  ID: {tool_data['id']}")
         click.echo(f"  Name: {tool_data['name']}")
         click.echo()
@@ -313,7 +334,7 @@ def tools_register(name, schema, description, as_json):
 @click.option("--json", "as_json", is_flag=True, help="Output as JSON")
 def tools_list(as_json):
     """List all registered tools"""
-    click.echo("🔧 Fetching tools...")
+    click.echo("Fetching tools...")
     
     tools_data = {
         "tools": [
@@ -327,7 +348,7 @@ def tools_list(as_json):
     else:
         click.echo("\n" + "=" * 50)
         for tool in tools_data.get("tools", []):
-            click.echo(f"  🔧 {tool['name']} - {tool['description']}")
+            click.echo(f"  [*] {tool['name']} - {tool['description']}")
         click.echo("=" * 50)
         click.echo()
 
@@ -337,8 +358,8 @@ def tools_list(as_json):
 @cli.command("health")
 def health():
     """Check Backboard API health"""
-    click.echo("🏥 Checking API health...")
-    click.echo("✅ Backboard API is healthy")
+    click.echo("Checking API health...")
+    click.echo("[OK] Backboard API is healthy")
 
 
 # ============ REPL ============
@@ -347,7 +368,7 @@ def health():
 @click.argument("agent_id", default=None, required=False)
 def repl(agent_id):
     """Start an interactive REPL with an agent"""
-    click.echo("🚀 Starting Sentinel AI REPL...")
+    click.echo("Starting Backboard IO REPL...")
     click.echo("Type 'quit' or 'exit' to end session\n")
     
     if not agent_id:
@@ -359,17 +380,17 @@ def repl(agent_id):
             user_input = click.prompt("You", prompt_suffix="> ")
             
             if user_input.lower() in ('quit', 'exit', 'q'):
-                click.echo("👋 Goodbye!")
+                click.echo("Goodbye!")
                 break
             
-            click.echo(f"🤖 Agent: Processing '{user_input[:50]}...'")
+            click.echo(f"Agent: Processing '{user_input[:50]}...'")
             click.echo(f"   Response: Task completed.\n")
             
         except KeyboardInterrupt:
-            click.echo("\n👋 Goodbye!")
+            click.echo("\nGoodbye!")
             break
         except EOFError:
-            click.echo("\n👋 Goodbye!")
+            click.echo("\nGoodbye!")
             break
 
 

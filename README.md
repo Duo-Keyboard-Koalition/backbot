@@ -1,4 +1,4 @@
-# Sentinel AI 🚀
+# Backboard IO 🚀
 
 Python Agentic Gateway for Backboard AI - Inspired by NanoClaw
 

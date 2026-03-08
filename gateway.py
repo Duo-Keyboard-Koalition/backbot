@@ -1,285 +1,132 @@
 #!/usr/bin/env python3
 """
-Sentinel AI - Python Gateway
-Flask-based API Gateway for Backboard AI
-Inspired by NanoClaw architecture
+Backboard IO - WebSocket Gateway
+Inspired by OpenClaw/NanoClaw architecture
 """
 
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-from dotenv import load_dotenv
+import asyncio
+import json
 import os
-import requests
-from agent import Agent
+import subprocess
+import time
+import websockets
+from dotenv import load_dotenv
+from agent import Agent, Invocation, AgentResponse
+from config import load_config
 
 load_dotenv()
 
-app = Flask(__name__)
-CORS(app)
-
 # Configuration
+CONFIG = load_config()
+HOST = CONFIG["gateway"]["host"]
+PORT = CONFIG["gateway"]["port"]
+MODE = CONFIG["gateway"]["mode"]
 API_KEY = os.getenv("BACKBOARD_API_KEY", "")
-BASE_URL = "https://api.backboard.ai"
 
-# In-memory storage
-agents_store = {}
-tasks_store = {}
-tools_store = {}
-conversations_store = {}
+# Shared state
+clients = set()
+sessions = {}
 
 # Default agent
 default_agent = Agent(
-    name="Sentinel",
+    name="Backboard",
     instructions="You are a helpful AI assistant with tool calling capabilities.",
-    api_key=API_KEY
+    api_key=API_KEY,
+    gateway_url=f"http://{HOST}:{PORT}" # Agent still uses HTTP for polling in this version? 
+                                        # Or should we update agent too?
 )
 
+async def handle_shell_command(command):
+    """Execute local shell command and return output"""
+    try:
+        # Remove ! prefix
+        cmd = command[1:].strip()
+        print(f"[*] Executing local command: {cmd}")
+        
+        # Run command
+        process = await asyncio.create_subprocess_shell(
+            cmd,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE
+        )
+        stdout, stderr = await process.communicate()
+        
+        output = stdout.decode().strip() or stderr.decode().strip() or "Command executed (no output)"
+        return output
+    except Exception as e:
+        return f"Error executing shell command: {str(e)}"
 
-# ============ Health ============
+async def broadcast(message):
+    """Send message to all connected clients"""
+    if clients:
+        await asyncio.gather(*(client.send(json.dumps(message)) for client in clients))
 
-@app.route("/health", methods=["GET"])
-def health():
-    """Health check endpoint"""
-    return jsonify({
-        "status": "healthy",
-        "service": "sentinel-ai-gateway",
-        "version": "1.0.0"
-    })
-
-
-# ============ Agents ============
-
-@app.route("/agents", methods=["GET"])
-def list_agents():
-    """List all agents"""
-    return jsonify({
-        "agents": list(agents_store.values()) or [
-            {"id": "agent_001", "name": "Assistant", "status": "active"},
-            {"id": "agent_002", "name": "Analyzer", "status": "active"}
-        ]
-    })
-
-
-@app.route("/agents", methods=["POST"])
-def create_agent():
-    """Create a new agent"""
-    data = request.json
+async def handler(websocket):
+    """WebSocket connection handler"""
+    clients.add(websocket)
+    print(f"[+] Client connected. Total: {len(clients)}")
     
-    if not data or not data.get("name") or not data.get("instructions"):
-        return jsonify({"error": "Name and instructions are required"}), 400
+    try:
+        async for message in websocket:
+            data = json.loads(message)
+            msg_type = data.get("type", "message")
+            
+            if msg_type == "message":
+                text = data.get("text", "")
+                
+                # Check for shell command
+                if text.startswith("!"):
+                    output = await handle_shell_command(text)
+                    await websocket.send(json.dumps({
+                        "type": "response",
+                        "content": output,
+                        "source": "shell"
+                    }))
+                else:
+                    # Process with agent (simulated async for now)
+                    # In a real system, this would trigger an invocation
+                    print(f"[*] Task: {text}")
+                    await websocket.send(json.dumps({
+                        "type": "status",
+                        "content": "Processing task..."
+                    }))
+                    
+                    # Direct agent invocation for now
+                    response = await default_agent.invoke(text)
+                    
+                    await websocket.send(json.dumps({
+                        "type": "response",
+                        "content": response.content,
+                        "tool_calls": [
+                            {"name": tc.name, "arguments": tc.arguments}
+                            for tc in response.tool_calls
+                        ]
+                    }))
+            
+            elif msg_type == "register":
+                client_id = data.get("client_id", "unknown")
+                print(f"[*] Registered client: {client_id}")
+                await websocket.send(json.dumps({
+                    "type": "ack",
+                    "content": f"Registered as {client_id}"
+                }))
+
+    except websockets.exceptions.ConnectionClosedError:
+        pass
+    finally:
+        clients.remove(websocket)
+        print(f"[-] Client disconnected. Total: {len(clients)}")
+
+async def main():
+    print(f"🚀 Backboard IO WebSocket Gateway")
+    print(f"📡 Mode: {MODE}")
+    print(f"🔗 Listening on ws://{HOST}:{PORT}")
     
-    agent_id = f"agent_{os.urandom(4).hex()}"
-    agent = {
-        "id": agent_id,
-        "name": data["name"],
-        "instructions": data["instructions"],
-        "description": data.get("description", ""),
-        "status": "active"
-    }
-    agents_store[agent_id] = agent
-    
-    return jsonify(agent), 201
-
-
-@app.route("/agents/<agent_id>", methods=["GET"])
-def get_agent(agent_id):
-    """Get agent by ID"""
-    agent = agents_store.get(agent_id)
-    if not agent:
-        # Return simulated agent for demo
-        agent = {
-            "id": agent_id,
-            "name": "Assistant",
-            "instructions": "You are a helpful assistant",
-            "status": "active"
-        }
-    return jsonify(agent)
-
-
-@app.route("/agents/<agent_id>", methods=["DELETE"])
-def delete_agent(agent_id):
-    """Delete an agent"""
-    if agent_id in agents_store:
-        del agents_store[agent_id]
-    return jsonify({"success": True, "message": f"Agent {agent_id} deleted"})
-
-
-# ============ Agent Execution ============
-
-@app.route("/agents/execute", methods=["POST"])
-def execute_agent():
-    """Execute a task with an agent"""
-    data = request.json
-    
-    if not data or not data.get("task"):
-        return jsonify({"error": "Task is required"}), 400
-    
-    task = data["task"]
-    agent_id = data.get("agentId")
-    
-    # Use default agent for execution
-    response = default_agent.chat(task)
-    
-    return jsonify({
-        "id": f"exec_{os.urandom(4).hex()}",
-        "agentId": agent_id or "default",
-        "task": task,
-        "status": "completed",
-        "result": response.content,
-        "tool_calls": [
-            {"name": tc.name, "arguments": tc.arguments}
-            for tc in response.tool_calls
-        ] if response.tool_calls else []
-    })
-
-
-# ============ Tasks ============
-
-@app.route("/tasks", methods=["GET"])
-def list_tasks():
-    """List all tasks"""
-    return jsonify({
-        "tasks": list(tasks_store.values()) or [
-            {"id": "task_001", "agent_id": "agent_001", "task": "Analyze data", "status": "completed"},
-            {"id": "task_002", "agent_id": "agent_001", "task": "Generate report", "status": "pending"}
-        ]
-    })
-
-
-@app.route("/tasks", methods=["POST"])
-def create_task():
-    """Create a new task"""
-    data = request.json
-    
-    if not data or not data.get("agentId") or not data.get("task"):
-        return jsonify({"error": "Agent ID and task are required"}), 400
-    
-    task_id = f"task_{os.urandom(4).hex()}"
-    task = {
-        "id": task_id,
-        "agent_id": data["agentId"],
-        "task": data["task"],
-        "priority": data.get("priority", "normal"),
-        "status": "pending"
-    }
-    tasks_store[task_id] = task
-    
-    return jsonify(task), 201
-
-
-@app.route("/tasks/<task_id>", methods=["GET"])
-def get_task(task_id):
-    """Get task by ID"""
-    task = tasks_store.get(task_id)
-    if not task:
-        task = {
-            "id": task_id,
-            "agent_id": "agent_001",
-            "task": "Sample task",
-            "status": "completed",
-            "result": "Task completed successfully"
-        }
-    return jsonify(task)
-
-
-# ============ Tools ============
-
-@app.route("/tools", methods=["GET"])
-def list_tools():
-    """List all registered tools"""
-    return jsonify({
-        "tools": list(tools_store.values()) or [
-            {"id": "tool_001", "name": "calculator", "description": "Math calculations"},
-            {"id": "tool_002", "name": "search", "description": "Web search"}
-        ]
-    })
-
-
-@app.route("/tools", methods=["POST"])
-def register_tool():
-    """Register a new tool"""
-    data = request.json
-    
-    if not data or not data.get("name") or not data.get("schema"):
-        return jsonify({"error": "Name and schema are required"}), 400
-    
-    tool_id = f"tool_{os.urandom(4).hex()}"
-    tool = {
-        "id": tool_id,
-        "name": data["name"],
-        "description": data.get("description", ""),
-        "schema": data["schema"]
-    }
-    tools_store[tool_id] = tool
-    
-    return jsonify(tool), 201
-
-
-# ============ Conversations ============
-
-@app.route("/conversations", methods=["POST"])
-def conversation():
-    """Send a message in a conversation"""
-    data = request.json
-    
-    if not data or not data.get("agentId") or not data.get("message"):
-        return jsonify({"error": "Agent ID and message are required"}), 400
-    
-    agent_id = data["agentId"]
-    message = data["message"]
-    conversation_id = data.get("conversationId") or f"conv_{os.urandom(4).hex()}"
-    
-    # Process message with agent
-    response = default_agent.chat(message)
-    
-    return jsonify({
-        "message": response.content,
-        "conversation_id": conversation_id,
-        "tool_calls": [
-            {"name": tc.name, "arguments": tc.arguments}
-            for tc in response.tool_calls
-        ] if response.tool_calls else []
-    })
-
-
-# ============ Chat (shortcut) ============
-
-@app.route("/chat", methods=["POST"])
-def chat():
-    """Quick chat endpoint"""
-    data = request.json
-    
-    if not data or not data.get("message"):
-        return jsonify({"error": "Message is required"}), 400
-    
-    response = default_agent.chat(data["message"])
-    
-    return jsonify({
-        "response": response.content,
-        "tool_calls": [
-            {"name": tc.name, "arguments": tc.arguments}
-            for tc in response.tool_calls
-        ] if response.tool_calls else []
-    })
-
-
-# ============ Error Handlers ============
-
-@app.errorhandler(404)
-def not_found(error):
-    return jsonify({"error": "Endpoint not found"}), 404
-
-
-@app.errorhandler(500)
-def internal_error(error):
-    return jsonify({"error": "Internal server error"}), 500
-
-
-# ============ Main ============
+    async with websockets.serve(handler, HOST, PORT):
+        await asyncio.Future()  # run forever
 
 if __name__ == "__main__":
-    port = int(os.getenv("PORT", 3000))
-    print(f"🚀 Sentinel AI Gateway running on port {port}")
-    print(f"📡 Backboard API configured")
-    print(f"🔗 Health check: http://localhost:{port}/health")
-    app.run(host="0.0.0.0", port=port, debug=True)
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print("\n[*] Shutting down...")

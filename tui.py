@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Sentinel AI - Terminal UI (TUI)
+Backboard IO - Terminal UI (TUI)
 Python TUI for Backboard AI Agent Management using Textual
 """
 
@@ -17,31 +17,31 @@ import json
 class AgentRow(Static):
     """Widget for displaying an agent in the list"""
     
-    def __init__(self, agent_id: str, name: str, status: str, *args, **kwargs):
+    def __init__(self, agent_id: str, agent_name: str, agent_status: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.agent_id = agent_id
-        self.name = name
-        self.status = status
+        self.agent_name = agent_name
+        self.agent_status = agent_status
     
     def compose(self) -> ComposeResult:
-        status_color = "green" if self.status == "active" else "yellow"
-        yield Static(f"[bold]{self.name}[/bold] (ID: {self.agent_id})")
-        yield Static(f"Status: [{status_color}]{self.status}[/]")
+        status_color = "green" if self.agent_status == "active" else "yellow"
+        yield Static(f"[bold]{self.agent_name}[/bold] (ID: {self.agent_id})")
+        yield Static(f"Status: [{status_color}]{self.agent_status}[/]")
 
 
 class TaskRow(Static):
     """Widget for displaying a task in the list"""
     
-    def __init__(self, task_id: str, agent_id: str, task: str, status: str, *args, **kwargs):
+    def __init__(self, task_id: str, agent_id: str, task_text: str, task_status: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.task_id = task_id
         self.agent_id = agent_id
-        self.task = task
-        self.status = status
+        self.task_text = task_text
+        self.task_status = task_status
     
     def compose(self) -> ComposeResult:
-        status_icon = "✅" if self.status == "completed" else "⏳"
-        task_preview = self.task[:50] + "..." if len(self.task) > 50 else self.task
+        status_icon = "✅" if self.task_status == "completed" else "⏳"
+        task_preview = self.task_text[:50] + "..." if len(self.task_text) > 50 else self.task_text
         yield Static(f"{status_icon} [bold]{self.task_id}[/] | Agent: {self.agent_id} | {task_preview}")
 
 
@@ -366,27 +366,70 @@ class ChatScreen(Screen):
         if event.input.id == "chat-input":
             self._send_message()
     
-    def _send_message(self) -> None:
-        """Send a chat message"""
+    @work
+    async def _send_message(self) -> None:
+        """Send a chat message via WebSocket"""
         chat_input = self.query_one("#chat-input", Input)
         chat_history = self.query_one("#chat-history", ScrollableContainer)
         
         if chat_input.value:
-            # Add user message
-            chat_history.mount(Static(f"[bold]You:[/] {chat_input.value}"))
-            
-            # Simulate agent response
-            chat_history.mount(Static(f"[bold]Agent:[/] I received: '{chat_input.value}'"))
-            
+            message = chat_input.value
             chat_input.value = ""
+            
+            # Add user message
+            chat_history.mount(Static(f"[bold]You:[/] {message}"))
+            chat_history.scroll_end()
+            
+            try:
+                import websockets
+                import json
+                from config import load_config
+                
+                config = load_config()
+                host = config["gateway"]["host"]
+                port = config["gateway"]["port"]
+                
+                async with websockets.connect(f"ws://{host}:{port}") as websocket:
+                    # Register
+                    await websocket.send(json.dumps({
+                        "type": "register",
+                        "client_id": "TUI"
+                    }))
+                    
+                    # Receive registration ack
+                    await websocket.recv()
+                    
+                    # Send message
+                    await websocket.send(json.dumps({
+                        "type": "message",
+                        "text": message
+                    }))
+                    
+                    # Receive response
+                    response_json = await websocket.recv()
+                    data = json.loads(response_json)
+                    
+                    if data.get("type") == "status":
+                        chat_history.mount(Static(f"[italic]{data['content']}[/]"))
+                        # Wait for actual response
+                        response_json = await websocket.recv()
+                        data = json.loads(response_json)
+                    
+                    content = data.get("content", "Error: No response")
+                    source = f" ({data['source']})" if "source" in data else ""
+                    chat_history.mount(Static(f"[bold]Agent{source}:[/] {content}"))
+                    
+            except Exception as e:
+                chat_history.mount(Static(f"[red]Error connecting to gateway: {str(e)}[/]"))
+            
             chat_history.scroll_end()
     
     def action_go_back(self) -> None:
         self.app.pop_screen()
 
 
-class SentinelApp(App):
-    """Sentinel AI TUI Application"""
+class BackboardApp(App):
+    """Backboard IO TUI Application"""
     
     CSS = """
     Screen {
@@ -481,7 +524,7 @@ class SentinelApp(App):
         self.selected_agent = None
     
     def on_mount(self) -> None:
-        self.push_screen("agents_screen")
+        self.push_screen("chat_screen")
     
     def action_show_agents(self) -> None:
         self.push_screen("agents_screen")
@@ -500,15 +543,15 @@ class SentinelApp(App):
 
 
 def main():
-    app = SentinelApp()
+    app = BackboardApp()
     
     # Register screens
-    app.register_screen("agents_screen", AgentsScreen)
-    app.register_screen("tasks_screen", TasksScreen)
-    app.register_screen("execute_screen", ExecuteScreen)
-    app.register_screen("chat_screen", ChatScreen)
-    app.register_screen("create_task_screen", CreateTaskScreen)
-    app.register_screen("add_agent_screen", AddAgentScreen)
+    app.install_screen(AgentsScreen(), "agents_screen")
+    app.install_screen(TasksScreen(), "tasks_screen")
+    app.install_screen(ExecuteScreen(), "execute_screen")
+    app.install_screen(ChatScreen(), "chat_screen")
+    app.install_screen(CreateTaskScreen(), "create_task_screen")
+    app.install_screen(AddAgentScreen(), "add_agent_screen")
     
     app.run()
 

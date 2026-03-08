@@ -22,13 +22,34 @@ tailbridge/
 │   ├── cmd/tailfs/    # Main entry point
 │   ├── internal/      # Internal packages
 │   └── README.md      # TailFS docs
-└── webguide/          # Web UI components (TODO)
-    └── README.md      # Webguide planning
+└── webguide/          # Web UI dashboard (React + TypeScript)
+    ├── src/           # Source code
+    ├── public/        # Static assets
+    ├── package.json   # Dependencies
+    └── README.md      # Webguide documentation
 ```
 
 ---
 
 ## Quick Start
+
+### Webguide - Web Dashboard (NEW!)
+
+```bash
+cd webguide
+npm install
+npm run dev
+```
+
+Access at: **http://localhost:3000**
+
+**Features:**
+- Real-time dashboard with metrics
+- Agent phone book with status
+- File transfer monitoring
+- Topics & consumers visualization
+
+See [webguide/QUICKSTART.md](webguide/QUICKSTART.md) for detailed setup.
 
 ### Taila2a - Agent-to-Agent Communication
 
@@ -71,6 +92,8 @@ go run ./cmd/tailfs send file.pdf tailfs-beta  # Send file
 | Agent Task Delegation | [eng_nbk/AGENT_TASKS.md](eng_nbk/AGENT_TASKS.md) |
 | Taila2a README | [taila2a/README.md](taila2a/README.md) |
 | TailFS README | [tailfs/README.md](tailfs/README.md) |
+| **Webguide Dashboard** | [webguide/README.md](webguide/README.md) |
+| Webguide Quick Start | [webguide/QUICKSTART.md](webguide/QUICKSTART.md) |
 
 ---
 
@@ -121,6 +144,9 @@ This project is designed for multi-agent development. See [eng_nbk/AGENT_TASKS.m
 | Language | Go 1.25+ |
 | Event Bus | Custom (Kafka-inspired) |
 | TUI | Bubbletea |
+| **Web UI** | **React + TypeScript + Vite** |
+| **UI Framework** | **Material-UI (MUI)** |
+| **State Management** | **Zustand** |
 | Testing | Go testing + testify |
 
 ---
@@ -132,4 +158,4 @@ Same as the parent project.
 ---
 
 *Last updated: March 7, 2026*
-*Status: Phase 1 Complete - Foundation Ready*
+*Status: Phase 2 Complete - Web Dashboard Implemented*

@@ -120,6 +120,14 @@ func (n *ConsoleTUINotifier) getRecentNotifications() []string {
 	return n.notifications
 }
 
+// LogMessage adds an arbitrary message to the notification list.
+// Used by the controller to log real A2A message traffic.
+func (n *ConsoleTUINotifier) LogMessage(msg string) {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+	n.addNotification(msg)
+}
+
 // ClearNotifications clears all notifications
 func (n *ConsoleTUINotifier) ClearNotifications() {
 	n.mu.Lock()

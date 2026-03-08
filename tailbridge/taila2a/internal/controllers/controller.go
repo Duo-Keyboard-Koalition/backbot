@@ -21,6 +21,7 @@ type Taila2aController struct {
 	discoverySvc    *models.DiscoveryService
 	tailnetClient   *http.Client
 	localClient     *http.Client
+	notifier        *models.ConsoleTUINotifier
 }
 
 // NewTaila2aController creates a new Taila2a controller
@@ -31,6 +32,7 @@ func NewTaila2aController(
 	discoverySvc *models.DiscoveryService,
 	tailnetClient *http.Client,
 	localClient *http.Client,
+	notifier *models.ConsoleTUINotifier,
 ) *Taila2aController {
 	return &Taila2aController{
 		name:            name,
@@ -39,6 +41,7 @@ func NewTaila2aController(
 		discoverySvc:    discoverySvc,
 		tailnetClient:   tailnetClient,
 		localClient:     localClient,
+		notifier:        notifier,
 	}
 }
 
@@ -85,6 +88,10 @@ func (c *Taila2aController) HandleInbound(w http.ResponseWriter, r *http.Request
 	}
 
 	log.Printf("[agnes:%s] delivered inbound payload from %s (%d)", c.name, env.SourceNode, resp.StatusCode)
+	if c.notifier != nil {
+		msgType := payloadType(env.Payload)
+		c.notifier.LogMessage(fmt.Sprintf("← %s: %s", env.SourceNode, msgType))
+	}
 }
 
 // HandleSend processes outgoing messages to the tailnet
@@ -135,6 +142,10 @@ func (c *Taila2aController) HandleSend(w http.ResponseWriter, r *http.Request) {
 		log.Printf("agnes outbound copy response error: %v", err)
 	}
 	log.Printf("[agnes:%s] routed outbound to %s (%d)", c.name, env.DestNode, resp.StatusCode)
+	if c.notifier != nil {
+		msgType := payloadType(env.Payload)
+		c.notifier.LogMessage(fmt.Sprintf("→ %s: %s", env.DestNode, msgType))
+	}
 }
 
 // HandleAgents returns discovered agents
@@ -235,6 +246,18 @@ func (c *Taila2aController) normalizeOutboundEnvelope(env *models.Envelope) erro
 		env.Timestamp = time.Now()
 	}
 	return nil
+}
+
+// payloadType extracts the "type" field from a JSON payload for display.
+// Returns "unknown" if the field is absent or unparseable.
+func payloadType(payload []byte) string {
+	var p struct {
+		Type string `json:"type"`
+	}
+	if err := json.Unmarshal(payload, &p); err == nil && p.Type != "" {
+		return p.Type
+	}
+	return "message"
 }
 
 func copyHeaders(dst, src http.Header) {

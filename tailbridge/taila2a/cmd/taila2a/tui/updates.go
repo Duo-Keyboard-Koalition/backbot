@@ -35,13 +35,17 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
-		
-		// Adjust table height
-		m.agentTable.SetHeight(m.height - 10)
-		
-		// Adjust viewport
-		m.logsViewport.Width = m.width - 2
-		m.logsViewport.Height = m.height - 10
+
+		// contentHeight = total lines available for the table/viewport body.
+		// headerLines (5) + contentHeight + footerLines (2) = m.height
+		contentHeight := m.height - headerLines - footerLines
+
+		// bubbles/table SetHeight sets the body rows (excludes its own header row).
+		m.agentTable.SetHeight(contentHeight - 1)
+
+		// viewport Height is the full visible area.
+		m.logsViewport.Width = m.width
+		m.logsViewport.Height = contentHeight
  
 	case tickMsg:
 		m.lastUpdate = time.Time(msg)

@@ -69,9 +69,15 @@ func runTUI() error {
 		return fmt.Errorf("failed to load config: %v", err)
 	}
 
-	port := cfg.PeerInboundPort
-	if port == 0 {
-		port = 8080 // Default fallback port
+	// The TUI talks to the local outbound server (LocalListen), not the tailnet peer port.
+	port := 8080 // default
+	if cfg.LocalListen != "" {
+		if _, p, splitErr := net.SplitHostPort(cfg.LocalListen); splitErr == nil {
+			var n int
+			if count, _ := fmt.Sscanf(p, "%d", &n); count == 1 && n > 0 {
+				port = n
+			}
+		}
 	}
 
 	fmt.Printf("Starting SentinelAI TUI connected to localhost:%d\n", port)

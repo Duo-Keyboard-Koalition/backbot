@@ -351,7 +351,8 @@ class AdkAgentLoop:
                 current_message=msg.content, channel=channel, chat_id=chat_id,
             )
             final_content, _, all_msgs = await self._run_agent_loop(messages)
-            self._save_turn(session, all_msgs, len(history))
+            # +1 to skip the prepended system message in all_msgs[0]
+            self._save_turn(session, all_msgs, 1 + len(history))
             self.sessions.save(session)
             return OutboundMessage(channel=channel, chat_id=chat_id,
                                   content=final_content or "Background task completed.")
@@ -461,14 +462,21 @@ class AdkAgentLoop:
         for m in messages[skip:]:
             entry = dict(m)
             role, content = entry.get("role"), entry.get("content")
+            # Never persist system messages — they are rebuilt fresh each turn.
+            if role == "system":
+                continue
             if role == "assistant" and not content and not entry.get("tool_calls"):
                 continue  # skip empty assistant messages — they poison session context
             if role == "tool" and isinstance(content, str) and len(content) > self._TOOL_RESULT_MAX_CHARS:
                 entry["content"] = content[:self._TOOL_RESULT_MAX_CHARS] + "\n... (truncated)"
             elif role == "user":
                 if isinstance(content, str) and content.startswith(ContextBuilder._RUNTIME_CONTEXT_TAG):
-                    continue
-                if isinstance(content, list):
+                    # Strip the runtime metadata prefix; persist only the actual user text.
+                    _, _, user_text = content.partition("\n\n")
+                    if not user_text.strip():
+                        continue
+                    entry["content"] = user_text
+                elif isinstance(content, list):
                     entry["content"] = [
                         {"type": "text", "text": "[image]"} if (
                             c.get("type") == "image_url"

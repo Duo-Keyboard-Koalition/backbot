@@ -121,14 +121,18 @@ Reply directly with text for conversations. Only use the 'message' tool to send 
             chat_id: Chat identifier
 
         Returns:
-            List of message dicts ready for the LLM
+            List of message dicts ready for the LLM. Always starts with the
+            system prompt so Gemini sees a valid user-first alternating sequence
+            (system is extracted by the provider, not counted as a content turn).
         """
-        messages = list(history)
+        # System prompt is rebuilt fresh every turn so identity/skills stay current.
+        # It is NOT stored in session history — _save_turn skips role=="system".
+        messages: list[dict] = [{"role": "system", "content": self.build_system_prompt()}]
+        messages.extend(history)
 
-        # Add runtime context as a system message if channel info provided
+        # Add runtime context as a prefix to the user message
         if channel and chat_id:
             runtime_context = self._build_runtime_context(channel, chat_id)
-            # Insert runtime context before the user message
             messages.append({
                 "role": "user",
                 "content": f"{runtime_context}\n\n{current_message}"

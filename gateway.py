@@ -7,16 +7,13 @@ Inspired by OpenClaw/NanoClaw architecture
 import asyncio
 import json
 import os
-import subprocess
-import time
+import sys
 import websockets
 from pathlib import Path
 from dotenv import load_dotenv
 from agent import Agent, Invocation, AgentResponse
 from config import load_config
 
-OPENCLAW_DIR = Path.home() / ".backclaw"
-PID_FILE = OPENCLAW_DIR / "gateway.pid"
 
 load_dotenv()
 
@@ -25,61 +22,64 @@ CONFIG = load_config()
 HOST = CONFIG["gateway"]["host"]
 PORT = CONFIG["gateway"]["port"]
 MODE = CONFIG["gateway"]["mode"]
-MODEL = CONFIG["gateway"].get("model", "gemini-2.0-flash")
+MODEL = CONFIG["gateway"].get("model", "")
+PROVIDER = CONFIG["gateway"].get("llm_provider", "")
 API_KEY = os.getenv("BACKBOARD_API_KEY", "")
 
 # Shared state
 clients = set()
 sessions = {}
 
-# Default agent
-default_agent = Agent(
-    name="Backclaw",
-    instructions="You are a helpful AI assistant with tool calling capabilities.",
-    api_key=API_KEY,
-    model=MODEL,
-    gateway_url=f"http://{HOST}:{PORT}"
-)
+
+def make_agent():
+    """Create the default agent from config."""
+    kwargs = dict(
+        name="Backclaw",
+        instructions="You are a helpful AI assistant with tool calling capabilities.",
+        api_key=API_KEY,
+    )
+    if MODEL:
+        kwargs["model"] = MODEL
+    if PROVIDER:
+        kwargs["llm_provider"] = PROVIDER
+    return Agent(**kwargs)
+
 
 async def handle_shell_command(command):
     """Execute local shell command and return output"""
     try:
-        # Remove ! prefix
         cmd = command[1:].strip()
         print(f"[*] Executing local command: {cmd}")
-        
-        # Run command
         process = await asyncio.create_subprocess_shell(
             cmd,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE
         )
         stdout, stderr = await process.communicate()
-        
-        output = stdout.decode().strip() or stderr.decode().strip() or "Command executed (no output)"
-        return output
+        return stdout.decode().strip() or stderr.decode().strip() or "Command executed (no output)"
     except Exception as e:
         return f"Error executing shell command: {str(e)}"
+
 
 async def broadcast(message):
     """Send message to all connected clients"""
     if clients:
         await asyncio.gather(*(client.send(json.dumps(message)) for client in clients))
 
-async def handler(websocket):
+
+async def handler(websocket, default_agent):
     """WebSocket connection handler"""
     clients.add(websocket)
     print(f"[+] Client connected. Total: {len(clients)}")
-    
+
     try:
         async for message in websocket:
             data = json.loads(message)
             msg_type = data.get("type", "message")
-            
+
             if msg_type == "message":
                 text = data.get("text", "")
-                
-                # Check for shell command
+
                 if text.startswith("!"):
                     output = await handle_shell_command(text)
                     await websocket.send(json.dumps({
@@ -88,17 +88,14 @@ async def handler(websocket):
                         "source": "shell"
                     }))
                 else:
-                    # Process with agent (simulated async for now)
-                    # In a real system, this would trigger an invocation
                     print(f"[*] Task: {text}")
                     await websocket.send(json.dumps({
                         "type": "status",
                         "content": "Processing task..."
                     }))
-                    
-                    # Direct agent invocation for now
+
                     response = await default_agent.invoke(text)
-                    
+
                     await websocket.send(json.dumps({
                         "type": "response",
                         "content": response.content,
@@ -107,7 +104,7 @@ async def handler(websocket):
                             for tc in response.tool_calls
                         ]
                     }))
-            
+
             elif msg_type == "register":
                 client_id = data.get("client_id", "unknown")
                 print(f"[*] Registered client: {client_id}")
@@ -119,19 +116,26 @@ async def handler(websocket):
     except websockets.exceptions.ConnectionClosedError:
         pass
     finally:
-        clients.remove(websocket)
+        clients.discard(websocket)
         print(f"[-] Client disconnected. Total: {len(clients)}")
 
-async def main():
-    print(f"🚀 Backclaw WebSocket Gateway")
-    print(f"📡 Mode: {MODE}")
-    print(f"🔗 Listening on ws://{HOST}:{PORT}")
-    
-    async with websockets.serve(handler, HOST, PORT):
+
+async def run_server(host=HOST, port=PORT):
+    """Start the WebSocket server. Can be used as an asyncio task."""
+    default_agent = make_agent()
+    print(f"[*] Backclaw WebSocket Gateway")
+    print(f"[*] Mode: {MODE}")
+    print(f"[*] Listening on ws://{host}:{port}")
+
+    async def _handler(ws):
+        await handler(ws, default_agent)
+
+    async with websockets.serve(_handler, host, port):
         await asyncio.Future()  # run forever
+
 
 if __name__ == "__main__":
     try:
-        asyncio.run(main())
+        asyncio.run(run_server())
     except KeyboardInterrupt:
         print("\n[*] Shutting down...")

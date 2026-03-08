@@ -5,8 +5,10 @@ import asyncio
 import time
 from typing import Any, Dict, List, Optional
 from backboard import BackboardClient
-from .core import Tool, ToolParameter, ToolParameterType, ToolCall, AgentResponse, Invocation
+from .core import Tool, ToolCall, AgentResponse, Invocation
 from .loop import process_agent_invocation
+from .tools import ToolManager
+from config import load_config
 
 class Agent:
     """
@@ -19,65 +21,58 @@ class Agent:
         name: str,
         instructions: str = "You are a helpful AI assistant.",
         api_key: Optional[str] = None,
-        model: str = "gemini-2.0-flash",
+        model: Optional[str] = None,
+        llm_provider: Optional[str] = None,
         base_url: str = "https://api.backboard.ai",
-        gateway_url: str = "http://localhost:18789"
+        gateway_url: str = "http://localhost:18789",
+        memory: Optional[str] = "Auto",
+        assistant_id: Optional[str] = None
     ):
         self.name = name
         self.instructions = instructions
         self.api_key = api_key
-        self.model = model
+        
+        # Load defaults from config if not provided
+        config = load_config()
+        self.model = model or config["gateway"].get("model")
+        self.llm_provider = llm_provider or config["gateway"].get("llm_provider")
+        
         self.base_url = base_url
         self.gateway_url = gateway_url
-        self.tools: Dict[str, Tool] = {}
-        self._tool_call_counter = 0
+        self.memory = memory
+        self.assistant_id = assistant_id
+        
+        # Import ToolManager here to avoid circular dependency
+        from .tools import ToolManager
+        self.tool_manager = ToolManager(self)
         
         # SDK components (initialized lazily)
         self.client: Optional[BackboardClient] = None
-        self.assistant_id: Optional[str] = None
         self.thread_id: Optional[str] = None
-        
-        self._register_default_tools()
-    
-    def _register_default_tools(self):
-        def calculator(expression: str) -> str:
-            try:
-                allowed_chars = set("0123456789+-*/.() ")
-                if not all(c in allowed_chars for c in expression):
-                    return "Error: Invalid characters"
-                result = eval(expression, {"__builtins__": {}}, {})
-                return str(result)
-            except Exception as e:
-                return f"Error: {str(e)}"
-        
-        self.register_tool(
-            name="calculator",
-            description="Evaluate math expressions",
-            parameters=[ToolParameter("expression", ToolParameterType.STRING, "Math expression")],
-            handler=calculator
-        )
+        self._tool_call_counter = 0
 
-    def register_tool(self, name, description, parameters, handler):
-        tool = Tool(name=name, description=description, parameters=parameters, handler=handler)
-        self.tools[name] = tool
-        return tool
+    @property
+    def tools(self) -> Dict[str, Tool]:
+        return self.tool_manager.tools
 
     async def _ensure_initialized(self):
         """Initialize SDK client, assistant, and thread if not already done"""
         if not self.client and self.api_key:
             self.client = BackboardClient(api_key=self.api_key)
             
-            # Create assistant
-            assistant = await self.client.create_assistant(
-                name=self.name,
-                model=self.model,
-                system_prompt=self._generate_system_prompt()
-            )
-            self.assistant_id = assistant.assistant_id
+            # Create assistant with tools if not already provided
+            if not self.assistant_id:
+                assistant = await self.client.create_assistant(
+                    name=self.name,
+                    system_prompt=self._generate_system_prompt(),
+                    tools=self.tool_manager.get_schemas()
+                )
+                self.assistant_id = assistant.assistant_id
             
             # Create default thread
-            thread = await self.client.create_thread(self.assistant_id)
-            self.thread_id = thread.thread_id
+            if not self.thread_id:
+                thread = await self.client.create_thread(self.assistant_id)
+                self.thread_id = thread.thread_id
 
     def _generate_system_prompt(self) -> str:
         return f"{self.instructions}"
@@ -96,17 +91,7 @@ class Agent:
         return tool_calls
 
     async def _execute_tool(self, tool_call: ToolCall) -> str:
-        if tool_call.name not in self.tools:
-            return f"Error: Unknown tool '{tool_call.name}'"
-        tool = self.tools[tool_call.name]
-        try:
-            if asyncio.iscoroutinefunction(tool.handler):
-                result = await tool.handler(**tool_call.arguments)
-            else:
-                result = tool.handler(**tool_call.arguments)
-            return str(result)
-        except Exception as e:
-            return f"Error executing {tool_call.name}: {str(e)}"
+        return await self.tool_manager.execute(tool_call.name, tool_call.arguments)
 
     async def invoke(self, task: str, context: Optional[Dict] = None) -> AgentResponse:
         invocation = Invocation(id=f"inv_{int(time.time())}", task=task, context=context or {})

@@ -75,77 +75,15 @@ def gateway():
 
 @gateway.command("start")
 def gateway_start():
-    """Start the Backclaw WebSocket gateway in the background"""
-    ensure_config_dir()
-    
-    if PID_FILE.exists():
-        try:
-            pid = int(PID_FILE.read_text())
-            if sys.platform == "win32":
-                # Check if process exists on Windows
-                process_check = subprocess.run(['tasklist', '/FI', f'PID eq {pid}'], capture_output=True, text=True)
-                if str(pid) in process_check.stdout:
-                    click.echo(f"⚠️ Gateway is already running (PID: {pid})")
-                    return
-            else:
-                os.kill(pid, 0)
-                click.echo(f"⚠️ Gateway is already running (PID: {pid})")
-                return
-        except (ValueError, OSError):
-            pass
-
-    gateway_script = Path(__file__).parent / "gateway.py"
-    
-    # Start process
-    if sys.platform == "win32":
-        # On Windows, we use creationflags to detach
-        process = subprocess.Popen(
-            [sys.executable, str(gateway_script)],
-            creationflags=subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.DETACHED_PROCESS,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            close_fds=True
-        )
-    else:
-        process = subprocess.Popen(
-            [sys.executable, str(gateway_script)],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            preexec_fn=os.setpgrp
-        )
-    
-    PID_FILE.write_text(str(process.pid))
-    click.echo(f"🚀 Backclaw Gateway started (PID: {process.pid})")
-    click.echo(f"📡 Listening on ws://127.0.0.1:18789")
-
-@gateway.command("stop")
-def gateway_stop():
-    """Stop the running Backclaw gateway"""
-    if not PID_FILE.exists():
-        click.echo("❌ No gateway running (PID file not found)")
-        return
-    
+    """Start the Backclaw WebSocket gateway (foreground, Ctrl+C to stop)"""
+    import asyncio
+    from gateway import run_server
+    click.echo("Starting Backclaw gateway... (Press Ctrl+C to stop)")
     try:
-        pid = int(PID_FILE.read_text())
-        if sys.platform == "win32":
-            subprocess.run(['taskkill', '/F', '/PID', str(pid)], capture_output=True)
-        else:
-            os.kill(pid, signal.SIGTERM)
-        
-        PID_FILE.unlink()
-        click.echo(f"🛑 Backclaw Gateway stopped (PID: {pid})")
-    except (ValueError, OSError) as e:
-        click.echo(f"❌ Failed to stop gateway: {e}")
-        if PID_FILE.exists():
-            PID_FILE.unlink()
+        asyncio.run(run_server())
+    except KeyboardInterrupt:
+        click.echo("\n[*] Gateway stopped.")
 
-@gateway.command("restart")
-@click.pass_context
-def gateway_restart(ctx):
-    """Restart the Backclaw gateway"""
-    ctx.invoke(gateway_stop)
-    time.sleep(1)
-    ctx.invoke(gateway_start)
 
 # ============ TUI ============
 

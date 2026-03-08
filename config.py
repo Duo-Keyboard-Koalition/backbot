@@ -7,7 +7,8 @@ DEFAULT_CONFIG = {
         "mode": "local",
         "port": 18789,
         "host": "127.0.0.1",
-        "model": "gemini-2.0-flash"
+        "model": "000ADI/Qwen2.5-0.5B-Instruct-Gensyn-Swarm-webbed_eager_cassowary",
+        "llm_provider": "together"
     }
 }
 

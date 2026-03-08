@@ -1,0 +1,1794 @@
+{
+  "duration": "1.1379192s",
+  "end_time": "2026-03-07T22:43:51.7573993-05:00",
+  "log_entries": [
+    {
+      "timestamp": "2026-03-07T22:43:50.6194933-05:00",
+      "level": "INFO",
+      "category": "TEST_LIFECYCLE",
+      "message": "Test NetworkDiscovery started",
+      "details": {
+        "start_time": "2026-03-07T22:43:50.6194933-05:00",
+        "test_id": "test-NetworkDiscovery-1772941430619493300"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.6194933-05:00",
+      "level": "INFO",
+      "category": "NETWORK",
+      "message": "Created new mock network",
+      "details": {
+        "network_id": "87a9133c"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.6200461-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent discover-agent-1 spinning up",
+      "details": {
+        "name": "discover-agent-1",
+        "state": "running",
+        "tailscale_ip": "100.64.0.1",
+        "tailscale_ipv6": "fd7a:115c:a1e0::1",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "f135425f-037b-46"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.6200461-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent discover-agent-2 spinning up",
+      "details": {
+        "name": "discover-agent-2",
+        "state": "running",
+        "tailscale_ip": "100.64.0.2",
+        "tailscale_ipv6": "fd7a:115c:a1e0::2",
+        "capabilities": [
+          "file_send"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "9ed72286-bc6c-47"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.6200461-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent discover-agent-3 spinning up",
+      "details": {
+        "name": "discover-agent-3",
+        "state": "running",
+        "tailscale_ip": "100.64.0.3",
+        "tailscale_ipv6": "fd7a:115c:a1e0::3",
+        "capabilities": [
+          "file_receive"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "12afd0b8-284f-4d"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.6713228-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent discover-agent-1 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "discover-agent-1",
+        "state": "stopping",
+        "uptime": "51.2773ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.6713228-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent discover-agent-2 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "discover-agent-2",
+        "state": "stopping",
+        "uptime": "51.2773ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.6713228-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent discover-agent-3 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "discover-agent-3",
+        "state": "stopping",
+        "uptime": "51.2773ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.6713228-05:00",
+      "level": "INFO",
+      "category": "NETWORK_STATE",
+      "message": "Network state snapshot",
+      "details": {
+        "network_id": "87a9133c",
+        "total_agents": 0,
+        "running_agents": 0,
+        "message_count": 0
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.6713228-05:00",
+      "level": "INFO",
+      "category": "NETWORK",
+      "message": "Created new mock network",
+      "details": {
+        "network_id": "c1ffa114"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.6719375-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent leave-agent-1 spinning up",
+      "details": {
+        "name": "leave-agent-1",
+        "state": "running",
+        "tailscale_ip": "100.64.0.1",
+        "tailscale_ipv6": "fd7a:115c:a1e0::1",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "6399847e-4080-4e"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.6719375-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent leave-agent-2 spinning up",
+      "details": {
+        "name": "leave-agent-2",
+        "state": "running",
+        "tailscale_ip": "100.64.0.2",
+        "tailscale_ipv6": "fd7a:115c:a1e0::2",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "2c326f9c-ad0f-42"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.6719375-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent leave-agent-3 spinning up",
+      "details": {
+        "name": "leave-agent-3",
+        "state": "running",
+        "tailscale_ip": "100.64.0.3",
+        "tailscale_ipv6": "fd7a:115c:a1e0::3",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "8bba5a17-887b-4e"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.7227019-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent leave-agent-2 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "leave-agent-2",
+        "state": "stopping",
+        "uptime": "50.765ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.7227019-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent leave-agent-3 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "leave-agent-3",
+        "state": "stopping",
+        "uptime": "50.765ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.7227019-05:00",
+      "level": "INFO",
+      "category": "NETWORK_STATE",
+      "message": "Network state snapshot",
+      "details": {
+        "network_id": "c1ffa114",
+        "total_agents": 0,
+        "running_agents": 0,
+        "message_count": 0
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.7227019-05:00",
+      "level": "INFO",
+      "category": "NETWORK",
+      "message": "Created new mock network",
+      "details": {
+        "network_id": "36173646"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.7230722-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent lifecycle-agent spinning up",
+      "details": {
+        "name": "lifecycle-agent",
+        "state": "running",
+        "tailscale_ip": "100.64.0.1",
+        "tailscale_ipv6": "fd7a:115c:a1e0::1",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "aa5a9949-6859-41"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.7230722-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent lifecycle-agent tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "lifecycle-agent",
+        "state": "stopping",
+        "uptime": "0s"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.7230722-05:00",
+      "level": "INFO",
+      "category": "NETWORK_STATE",
+      "message": "Network state snapshot",
+      "details": {
+        "network_id": "36173646",
+        "total_agents": 0,
+        "running_agents": 0,
+        "message_count": 0
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.7230722-05:00",
+      "level": "INFO",
+      "category": "NETWORK",
+      "message": "Created new mock network",
+      "details": {
+        "network_id": "5a2f04b4"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.7230722-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent search-alpha-1 spinning up",
+      "details": {
+        "name": "search-alpha-1",
+        "state": "running",
+        "tailscale_ip": "100.64.0.1",
+        "tailscale_ipv6": "fd7a:115c:a1e0::1",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "0b00717f-81f1-4d"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.7230722-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent search-alpha-2 spinning up",
+      "details": {
+        "name": "search-alpha-2",
+        "state": "running",
+        "tailscale_ip": "100.64.0.2",
+        "tailscale_ipv6": "fd7a:115c:a1e0::2",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "3b7d5e15-7840-48"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.7230722-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent search-beta-1 spinning up",
+      "details": {
+        "name": "search-beta-1",
+        "state": "running",
+        "tailscale_ip": "100.64.0.3",
+        "tailscale_ipv6": "fd7a:115c:a1e0::3",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "fdd9ab7e-2fda-47"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.7230722-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent other-agent spinning up",
+      "details": {
+        "name": "other-agent",
+        "state": "running",
+        "tailscale_ip": "100.64.0.4",
+        "tailscale_ipv6": "fd7a:115c:a1e0::4",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "f89a0693-97a1-47"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.7230722-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent search-alpha-1 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "search-alpha-1",
+        "state": "stopping",
+        "uptime": "0s"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.7230722-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent search-alpha-2 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "search-alpha-2",
+        "state": "stopping",
+        "uptime": "0s"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.7230722-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent search-beta-1 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "search-beta-1",
+        "state": "stopping",
+        "uptime": "0s"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.7230722-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent other-agent tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "other-agent",
+        "state": "stopping",
+        "uptime": "0s"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.7230722-05:00",
+      "level": "INFO",
+      "category": "NETWORK_STATE",
+      "message": "Network state snapshot",
+      "details": {
+        "network_id": "5a2f04b4",
+        "total_agents": 0,
+        "running_agents": 0,
+        "message_count": 0
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.7230722-05:00",
+      "level": "INFO",
+      "category": "NETWORK",
+      "message": "Created new mock network",
+      "details": {
+        "network_id": "24037460"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.7230722-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent visible-sender spinning up",
+      "details": {
+        "name": "visible-sender",
+        "state": "running",
+        "tailscale_ip": "100.64.0.1",
+        "tailscale_ipv6": "fd7a:115c:a1e0::1",
+        "capabilities": [
+          "chat",
+          "file_send"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "d1e02497-5614-4f"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.7230722-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent visible-receiver spinning up",
+      "details": {
+        "name": "visible-receiver",
+        "state": "running",
+        "tailscale_ip": "100.64.0.2",
+        "tailscale_ipv6": "fd7a:115c:a1e0::2",
+        "capabilities": [
+          "chat",
+          "file_receive"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "41722ec8-510f-42"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9278414-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent visible-sender tearing down",
+      "details": {
+        "messages_sent": 10,
+        "name": "visible-sender",
+        "state": "stopping",
+        "uptime": "204.7715ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9278414-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent visible-receiver tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "visible-receiver",
+        "state": "stopping",
+        "uptime": "204.7715ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9278414-05:00",
+      "level": "INFO",
+      "category": "NETWORK_STATE",
+      "message": "Network state snapshot",
+      "details": {
+        "network_id": "24037460",
+        "total_agents": 0,
+        "running_agents": 0,
+        "message_count": 10
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9278414-05:00",
+      "level": "INFO",
+      "category": "NETWORK",
+      "message": "Created new mock network",
+      "details": {
+        "network_id": "e55e6bfc"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9278414-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent cap-sender-1 spinning up",
+      "details": {
+        "name": "cap-sender-1",
+        "state": "running",
+        "tailscale_ip": "100.64.0.1",
+        "tailscale_ipv6": "fd7a:115c:a1e0::1",
+        "capabilities": [
+          "file_send",
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "f2b7b9c0-1c57-40"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9278414-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent cap-sender-2 spinning up",
+      "details": {
+        "name": "cap-sender-2",
+        "state": "running",
+        "tailscale_ip": "100.64.0.2",
+        "tailscale_ipv6": "fd7a:115c:a1e0::2",
+        "capabilities": [
+          "file_send"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "13ac70df-a83a-43"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9278414-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent cap-receiver-1 spinning up",
+      "details": {
+        "name": "cap-receiver-1",
+        "state": "running",
+        "tailscale_ip": "100.64.0.3",
+        "tailscale_ipv6": "fd7a:115c:a1e0::3",
+        "capabilities": [
+          "file_receive",
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "6b85474a-48b3-4f"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9278414-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent cap-receiver-2 spinning up",
+      "details": {
+        "name": "cap-receiver-2",
+        "state": "running",
+        "tailscale_ip": "100.64.0.4",
+        "tailscale_ipv6": "fd7a:115c:a1e0::4",
+        "capabilities": [
+          "file_receive"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "774ab399-1497-41"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9278414-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent cap-both spinning up",
+      "details": {
+        "name": "cap-both",
+        "state": "running",
+        "tailscale_ip": "100.64.0.5",
+        "tailscale_ipv6": "fd7a:115c:a1e0::5",
+        "capabilities": [
+          "file_send",
+          "file_receive"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "984c7eea-9c78-47"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9278414-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent cap-chat-only spinning up",
+      "details": {
+        "name": "cap-chat-only",
+        "state": "running",
+        "tailscale_ip": "100.64.0.6",
+        "tailscale_ipv6": "fd7a:115c:a1e0::6",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "0bb35366-8609-4d"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9784196-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent cap-sender-1 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "cap-sender-1",
+        "state": "stopping",
+        "uptime": "50.5788ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9784196-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent cap-sender-2 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "cap-sender-2",
+        "state": "stopping",
+        "uptime": "50.5788ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9784196-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent cap-receiver-1 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "cap-receiver-1",
+        "state": "stopping",
+        "uptime": "50.5788ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9784196-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent cap-receiver-2 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "cap-receiver-2",
+        "state": "stopping",
+        "uptime": "50.5788ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9784196-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent cap-both tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "cap-both",
+        "state": "stopping",
+        "uptime": "50.5788ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9784196-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent cap-chat-only tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "cap-chat-only",
+        "state": "stopping",
+        "uptime": "50.5788ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9784196-05:00",
+      "level": "INFO",
+      "category": "NETWORK_STATE",
+      "message": "Network state snapshot",
+      "details": {
+        "network_id": "e55e6bfc",
+        "total_agents": 0,
+        "running_agents": 0,
+        "message_count": 0
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9784196-05:00",
+      "level": "INFO",
+      "category": "NETWORK",
+      "message": "Created new mock network",
+      "details": {
+        "network_id": "0d893f2b"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9784196-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent concurrent-9 spinning up",
+      "details": {
+        "name": "concurrent-9",
+        "state": "running",
+        "tailscale_ip": "100.64.0.1",
+        "tailscale_ipv6": "fd7a:115c:a1e0::1",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "5e03edf9-c815-45"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9784196-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent concurrent-3 spinning up",
+      "details": {
+        "name": "concurrent-3",
+        "state": "running",
+        "tailscale_ip": "100.64.0.2",
+        "tailscale_ipv6": "fd7a:115c:a1e0::2",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "bc9bf56d-6c44-47"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9784196-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent concurrent-0 spinning up",
+      "details": {
+        "name": "concurrent-0",
+        "state": "running",
+        "tailscale_ip": "100.64.0.3",
+        "tailscale_ipv6": "fd7a:115c:a1e0::3",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "3af9541d-4750-4a"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9784196-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent concurrent-2 spinning up",
+      "details": {
+        "name": "concurrent-2",
+        "state": "running",
+        "tailscale_ip": "100.64.0.4",
+        "tailscale_ipv6": "fd7a:115c:a1e0::4",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "d714fa2f-6d89-41"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9784196-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent concurrent-5 spinning up",
+      "details": {
+        "name": "concurrent-5",
+        "state": "running",
+        "tailscale_ip": "100.64.0.5",
+        "tailscale_ipv6": "fd7a:115c:a1e0::5",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "2fee2728-5e0b-46"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9784196-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent concurrent-4 spinning up",
+      "details": {
+        "name": "concurrent-4",
+        "state": "running",
+        "tailscale_ip": "100.64.0.6",
+        "tailscale_ipv6": "fd7a:115c:a1e0::6",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "35b011cd-26ef-4b"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9784196-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent concurrent-6 spinning up",
+      "details": {
+        "name": "concurrent-6",
+        "state": "running",
+        "tailscale_ip": "100.64.0.7",
+        "tailscale_ipv6": "fd7a:115c:a1e0::7",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "853c702e-c804-42"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9784196-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent concurrent-7 spinning up",
+      "details": {
+        "name": "concurrent-7",
+        "state": "running",
+        "tailscale_ip": "100.64.0.8",
+        "tailscale_ipv6": "fd7a:115c:a1e0::8",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "93b838b7-c394-4e"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9784196-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent concurrent-8 spinning up",
+      "details": {
+        "name": "concurrent-8",
+        "state": "running",
+        "tailscale_ip": "100.64.0.9",
+        "tailscale_ipv6": "fd7a:115c:a1e0::9",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "e4a82bfa-ab22-40"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:50.9784196-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent concurrent-1 spinning up",
+      "details": {
+        "name": "concurrent-1",
+        "state": "running",
+        "tailscale_ip": "100.64.0.10",
+        "tailscale_ipv6": "fd7a:115c:a1e0::10",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "d8076493-4af4-44"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.1299455-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent concurrent-9 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "concurrent-9",
+        "state": "stopping",
+        "uptime": "151.5277ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.1299455-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent concurrent-3 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "concurrent-3",
+        "state": "stopping",
+        "uptime": "151.5277ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.1299455-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent concurrent-0 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "concurrent-0",
+        "state": "stopping",
+        "uptime": "151.5277ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.1299455-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent concurrent-2 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "concurrent-2",
+        "state": "stopping",
+        "uptime": "151.5277ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.1299455-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent concurrent-5 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "concurrent-5",
+        "state": "stopping",
+        "uptime": "151.5277ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.1299455-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent concurrent-4 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "concurrent-4",
+        "state": "stopping",
+        "uptime": "151.5277ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.1299455-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent concurrent-6 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "concurrent-6",
+        "state": "stopping",
+        "uptime": "151.5277ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.1299455-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent concurrent-7 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "concurrent-7",
+        "state": "stopping",
+        "uptime": "151.5277ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.1299455-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent concurrent-8 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "concurrent-8",
+        "state": "stopping",
+        "uptime": "151.5277ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.1299455-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent concurrent-1 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "concurrent-1",
+        "state": "stopping",
+        "uptime": "151.5277ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.1299455-05:00",
+      "level": "INFO",
+      "category": "NETWORK_STATE",
+      "message": "Network state snapshot",
+      "details": {
+        "network_id": "0d893f2b",
+        "total_agents": 0,
+        "running_agents": 0,
+        "message_count": 0
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.1299455-05:00",
+      "level": "INFO",
+      "category": "NETWORK",
+      "message": "Created new mock network",
+      "details": {
+        "network_id": "5311ecdc"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.3420564-05:00",
+      "level": "INFO",
+      "category": "NETWORK_STATE",
+      "message": "Network state snapshot",
+      "details": {
+        "network_id": "5311ecdc",
+        "total_agents": 0,
+        "running_agents": 0,
+        "message_count": 0
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.3424876-05:00",
+      "level": "INFO",
+      "category": "NETWORK",
+      "message": "Created new mock network",
+      "details": {
+        "network_id": "243f7641"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.3424876-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent stats-agent-1 spinning up",
+      "details": {
+        "name": "stats-agent-1",
+        "state": "running",
+        "tailscale_ip": "100.64.0.1",
+        "tailscale_ipv6": "fd7a:115c:a1e0::1",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "02389dbb-588f-4e"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.3424876-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent stats-agent-2 spinning up",
+      "details": {
+        "name": "stats-agent-2",
+        "state": "running",
+        "tailscale_ip": "100.64.0.2",
+        "tailscale_ipv6": "fd7a:115c:a1e0::2",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "55dddf29-51ed-48"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.3424876-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent stats-agent-3 spinning up",
+      "details": {
+        "name": "stats-agent-3",
+        "state": "running",
+        "tailscale_ip": "100.64.0.3",
+        "tailscale_ipv6": "fd7a:115c:a1e0::3",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "c3041ae5-565d-4e"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4149078-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent stats-agent-1 tearing down",
+      "details": {
+        "messages_sent": 2,
+        "name": "stats-agent-1",
+        "state": "stopping",
+        "uptime": "72.4211ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4149078-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent stats-agent-2 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "stats-agent-2",
+        "state": "stopping",
+        "uptime": "72.4211ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4149078-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent stats-agent-3 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "stats-agent-3",
+        "state": "stopping",
+        "uptime": "72.4211ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4149078-05:00",
+      "level": "INFO",
+      "category": "NETWORK_STATE",
+      "message": "Network state snapshot",
+      "details": {
+        "network_id": "243f7641",
+        "total_agents": 0,
+        "running_agents": 0,
+        "message_count": 2
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4154309-05:00",
+      "level": "INFO",
+      "category": "NETWORK",
+      "message": "Created new mock network",
+      "details": {
+        "network_id": "971fd3c6"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4154309-05:00",
+      "level": "INFO",
+      "category": "TEST",
+      "message": "Spawning 5 agents for network-wide discovery test"
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4159571-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent network-agent-1 spinning up",
+      "details": {
+        "name": "network-agent-1",
+        "state": "running",
+        "tailscale_ip": "100.64.0.1",
+        "tailscale_ipv6": "fd7a:115c:a1e0::1",
+        "capabilities": [
+          "chat",
+          "file_send"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "54963458-7307-41"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4159571-05:00",
+      "level": "INFO",
+      "category": "AGENT",
+      "message": "Spawned agent network-agent-1",
+      "details": {
+        "capabilities": [
+          "chat",
+          "file_send"
+        ],
+        "tailscale_ip": "100.64.0.1",
+        "tailscale_ipv6": "fd7a:115c:a1e0::1"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4164937-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent network-agent-2 spinning up",
+      "details": {
+        "name": "network-agent-2",
+        "state": "running",
+        "tailscale_ip": "100.64.0.2",
+        "tailscale_ipv6": "fd7a:115c:a1e0::2",
+        "capabilities": [
+          "chat",
+          "file_receive"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "9eeb10ea-f4d6-4f"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4164937-05:00",
+      "level": "INFO",
+      "category": "AGENT",
+      "message": "Spawned agent network-agent-2",
+      "details": {
+        "capabilities": [
+          "chat",
+          "file_receive"
+        ],
+        "tailscale_ip": "100.64.0.2",
+        "tailscale_ipv6": "fd7a:115c:a1e0::2"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4164937-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent network-agent-3 spinning up",
+      "details": {
+        "name": "network-agent-3",
+        "state": "running",
+        "tailscale_ip": "100.64.0.3",
+        "tailscale_ipv6": "fd7a:115c:a1e0::3",
+        "capabilities": [
+          "file_send",
+          "file_receive"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "67e39c11-282b-40"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4164937-05:00",
+      "level": "INFO",
+      "category": "AGENT",
+      "message": "Spawned agent network-agent-3",
+      "details": {
+        "capabilities": [
+          "file_send",
+          "file_receive"
+        ],
+        "tailscale_ip": "100.64.0.3",
+        "tailscale_ipv6": "fd7a:115c:a1e0::3"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4164937-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent network-agent-4 spinning up",
+      "details": {
+        "name": "network-agent-4",
+        "state": "running",
+        "tailscale_ip": "100.64.0.4",
+        "tailscale_ipv6": "fd7a:115c:a1e0::4",
+        "capabilities": [
+          "chat",
+          "command"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "2a5bf730-a6d2-44"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4164937-05:00",
+      "level": "INFO",
+      "category": "AGENT",
+      "message": "Spawned agent network-agent-4",
+      "details": {
+        "capabilities": [
+          "chat",
+          "command"
+        ],
+        "tailscale_ip": "100.64.0.4",
+        "tailscale_ipv6": "fd7a:115c:a1e0::4"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4164937-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent network-agent-5 spinning up",
+      "details": {
+        "name": "network-agent-5",
+        "state": "running",
+        "tailscale_ip": "100.64.0.5",
+        "tailscale_ipv6": "fd7a:115c:a1e0::5",
+        "capabilities": [
+          "stream",
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "28bad5fd-a1fe-44"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4170202-05:00",
+      "level": "INFO",
+      "category": "AGENT",
+      "message": "Spawned agent network-agent-5",
+      "details": {
+        "capabilities": [
+          "stream",
+          "chat"
+        ],
+        "tailscale_ip": "100.64.0.5",
+        "tailscale_ipv6": "fd7a:115c:a1e0::5"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4170202-05:00",
+      "level": "INFO",
+      "category": "NETWORK_STATE",
+      "message": "Network state snapshot",
+      "details": {
+        "network_id": "971fd3c6",
+        "total_agents": 5,
+        "running_agents": 5,
+        "message_count": 0
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4170202-05:00",
+      "level": "INFO",
+      "category": "AGENT",
+      "message": "Agent network-agent-4 discovered",
+      "details": {
+        "state": "running",
+        "tailscale_ip": "100.64.0.4",
+        "tailscale_ipv6": "fd7a:115c:a1e0::4"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4170202-05:00",
+      "level": "INFO",
+      "category": "AGENT",
+      "message": "Agent network-agent-5 discovered",
+      "details": {
+        "state": "running",
+        "tailscale_ip": "100.64.0.5",
+        "tailscale_ipv6": "fd7a:115c:a1e0::5"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4170202-05:00",
+      "level": "INFO",
+      "category": "AGENT",
+      "message": "Agent network-agent-1 discovered",
+      "details": {
+        "state": "running",
+        "tailscale_ip": "100.64.0.1",
+        "tailscale_ipv6": "fd7a:115c:a1e0::1"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4170202-05:00",
+      "level": "INFO",
+      "category": "AGENT",
+      "message": "Agent network-agent-2 discovered",
+      "details": {
+        "state": "running",
+        "tailscale_ip": "100.64.0.2",
+        "tailscale_ipv6": "fd7a:115c:a1e0::2"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4170202-05:00",
+      "level": "INFO",
+      "category": "AGENT",
+      "message": "Agent network-agent-3 discovered",
+      "details": {
+        "state": "running",
+        "tailscale_ip": "100.64.0.3",
+        "tailscale_ipv6": "fd7a:115c:a1e0::3"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4170202-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent network-agent-1 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "network-agent-1",
+        "state": "stopping",
+        "uptime": "1.0631ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4170202-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent network-agent-2 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "network-agent-2",
+        "state": "stopping",
+        "uptime": "526.5µs"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4170202-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent network-agent-3 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "network-agent-3",
+        "state": "stopping",
+        "uptime": "526.5µs"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4170202-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent network-agent-4 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "network-agent-4",
+        "state": "stopping",
+        "uptime": "526.5µs"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4170202-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent network-agent-5 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "network-agent-5",
+        "state": "stopping",
+        "uptime": "526.5µs"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4170202-05:00",
+      "level": "INFO",
+      "category": "NETWORK_STATE",
+      "message": "Network state snapshot",
+      "details": {
+        "network_id": "971fd3c6",
+        "total_agents": 0,
+        "running_agents": 0,
+        "message_count": 0
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4170202-05:00",
+      "level": "INFO",
+      "category": "NETWORK",
+      "message": "Created new mock network",
+      "details": {
+        "network_id": "09d76d73"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4170202-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent phonebook-agent-1 spinning up",
+      "details": {
+        "name": "phonebook-agent-1",
+        "state": "running",
+        "tailscale_ip": "100.64.0.1",
+        "tailscale_ipv6": "fd7a:115c:a1e0::1",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "4c5c60b4-ea4b-48"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.4170202-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent phonebook-agent-2 spinning up",
+      "details": {
+        "name": "phonebook-agent-2",
+        "state": "running",
+        "tailscale_ip": "100.64.0.2",
+        "tailscale_ipv6": "fd7a:115c:a1e0::2",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "d747209d-5bac-49"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.5684491-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent phonebook-agent-1 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "phonebook-agent-1",
+        "state": "stopping",
+        "uptime": "151.4307ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.5684491-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent phonebook-agent-2 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "phonebook-agent-2",
+        "state": "stopping",
+        "uptime": "151.4307ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.5684491-05:00",
+      "level": "INFO",
+      "category": "NETWORK_STATE",
+      "message": "Network state snapshot",
+      "details": {
+        "network_id": "09d76d73",
+        "total_agents": 0,
+        "running_agents": 0,
+        "message_count": 0
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.5684491-05:00",
+      "level": "INFO",
+      "category": "NETWORK",
+      "message": "Created new mock network",
+      "details": {
+        "network_id": "ae9e3d30"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.6693446-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent wait-for-me spinning up",
+      "details": {
+        "name": "wait-for-me",
+        "state": "running",
+        "tailscale_ip": "100.64.0.1",
+        "tailscale_ipv6": "fd7a:115c:a1e0::1",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "5ca0c90c-f005-42"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.6736198-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent wait-for-me tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "wait-for-me",
+        "state": "stopping",
+        "uptime": "4.7344ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.6736198-05:00",
+      "level": "INFO",
+      "category": "NETWORK_STATE",
+      "message": "Network state snapshot",
+      "details": {
+        "network_id": "ae9e3d30",
+        "total_agents": 0,
+        "running_agents": 0,
+        "message_count": 0
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.6736198-05:00",
+      "level": "INFO",
+      "category": "NETWORK",
+      "message": "Created new mock network",
+      "details": {
+        "network_id": "9142339a"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.6736198-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent wait-all-0 spinning up",
+      "details": {
+        "name": "wait-all-0",
+        "state": "running",
+        "tailscale_ip": "100.64.0.1",
+        "tailscale_ipv6": "fd7a:115c:a1e0::1",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "9bb9db1c-596e-4e"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.6938343-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent wait-all-1 spinning up",
+      "details": {
+        "name": "wait-all-1",
+        "state": "running",
+        "tailscale_ip": "100.64.0.2",
+        "tailscale_ipv6": "fd7a:115c:a1e0::2",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "9e3c2cb3-4c5b-44"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.713622-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent wait-all-2 spinning up",
+      "details": {
+        "name": "wait-all-2",
+        "state": "running",
+        "tailscale_ip": "100.64.0.3",
+        "tailscale_ipv6": "fd7a:115c:a1e0::3",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "08d65847-f407-4e"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.7341126-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent wait-all-3 spinning up",
+      "details": {
+        "name": "wait-all-3",
+        "state": "running",
+        "tailscale_ip": "100.64.0.4",
+        "tailscale_ipv6": "fd7a:115c:a1e0::4",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "c8fa2534-78a3-43"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.7539282-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent wait-all-4 spinning up",
+      "details": {
+        "name": "wait-all-4",
+        "state": "running",
+        "tailscale_ip": "100.64.0.5",
+        "tailscale_ipv6": "fd7a:115c:a1e0::5",
+        "capabilities": [
+          "chat"
+        ],
+        "inbound_port": 8001,
+        "http_port": 8080,
+        "node_id": "ebb8cbbd-0574-48"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.7573993-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent wait-all-0 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "wait-all-0",
+        "state": "stopping",
+        "uptime": "83.7805ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.7573993-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent wait-all-1 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "wait-all-1",
+        "state": "stopping",
+        "uptime": "63.5658ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.7573993-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent wait-all-2 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "wait-all-2",
+        "state": "stopping",
+        "uptime": "43.7779ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.7573993-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent wait-all-3 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "wait-all-3",
+        "state": "stopping",
+        "uptime": "23.287ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.7573993-05:00",
+      "level": "INFO",
+      "category": "AGENT_LIFECYCLE",
+      "message": "Agent wait-all-4 tearing down",
+      "details": {
+        "messages_sent": 0,
+        "name": "wait-all-4",
+        "state": "stopping",
+        "uptime": "3.4712ms"
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.7573993-05:00",
+      "level": "INFO",
+      "category": "NETWORK_STATE",
+      "message": "Network state snapshot",
+      "details": {
+        "network_id": "9142339a",
+        "total_agents": 0,
+        "running_agents": 0,
+        "message_count": 0
+      }
+    },
+    {
+      "timestamp": "2026-03-07T22:43:51.7573993-05:00",
+      "level": "INFO",
+      "category": "TEST_LIFECYCLE",
+      "message": "Test NetworkDiscovery completed",
+      "details": {
+        "duration": "1.1379192s",
+        "passed": true,
+        "test_id": "test-NetworkDiscovery-1772941430619493300"
+      }
+    }
+  ],
+  "start_time": "2026-03-07T22:43:50.6194933-05:00",
+  "test_id": "test-NetworkDiscovery-1772941430619493300",
+  "test_name": "NetworkDiscovery"
+}

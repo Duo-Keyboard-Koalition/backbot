@@ -1,0 +1,41 @@
+FROM golang:1.25-alpine AS builder
+
+WORKDIR /app
+
+# Install dependencies
+RUN apk add --no-cache git
+
+# Copy go mod files
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Build the test agent
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o testagent ./cmd/test-agent
+
+# Final stage
+FROM alpine:3.19
+
+WORKDIR /app
+
+# Install Tailscale
+RUN apk add --no-cache curl iptables iproute2 ca-certificates && \
+    curl -fsSL https://tailscale.com/install.sh | sh
+
+# Copy the test agent binary
+COPY --from=builder /app/testagent /app/testagent
+
+# Create directories for tailscale and agent data
+RUN mkdir -p /var/lib/tailscale /app/data
+
+# Expose ports for A2A communication
+EXPOSE 8080 8001
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
+
+# Entry point
+CMD ["/app/testagent"]

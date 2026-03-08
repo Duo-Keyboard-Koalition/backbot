@@ -1,0 +1,43 @@
+{
+  "service": {
+    "name": "taila2a",
+    "agent_id": "agent-alpha",
+    "http_port": 8001,
+    "grpc_port": 0
+  },
+  "eventbus": {
+    "enabled": true,
+    "data_dir": "data/eventbus",
+    "default_partitions": 4,
+    "wal": {
+      "enabled": true,
+      "dir": "data/eventbus/wal",
+      "segment_size": 67108864,
+      "sync_interval_str": "1s"
+    },
+    "consumer_group": {
+      "session_timeout_str": "30s",
+      "heartbeat_interval_str": "3s"
+    }
+  },
+  "tailfs": {
+    "enabled": true,
+    "data_dir": "data/tailfs",
+    "chunk_dir": "data/tailfs/chunks",
+    "incoming_dir": "data/tailfs/incoming",
+    "max_chunk_size": 4194304,
+    "compression_enabled": false,
+    "encryption_enabled": false
+  },
+  "tailscale": {
+    "enabled": true,
+    "auth_key": "",
+    "control_url": "",
+    "hostname": ""
+  },
+  "logging": {
+    "level": "info",
+    "format": "text",
+    "output": "stdout"
+  }
+}

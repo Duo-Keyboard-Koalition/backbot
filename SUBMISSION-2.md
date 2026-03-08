@@ -264,7 +264,7 @@ A monitoring layer that:
 - **Documentation:**
   - [Backend README](backend/README.md)
   - [Tailbridge README](tailbridge/README.md)
-  - [Engineering Notebook](scorpion/engineering_notebook/)
+  - [Engineering Notebook](darci/engineering_notebook/)
 
 ---
 

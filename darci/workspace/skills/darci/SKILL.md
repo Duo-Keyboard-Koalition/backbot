@@ -32,7 +32,7 @@ always: true
 
 - `notebook_create(topic, objective, key_findings?, decisions?, next_steps?)` → creates dated entry
 - `notebook_append(filepath, section, content)` → appends section to existing file
-- Notebooks saved to: `scorpion/engineering_notebook/YYYY-MM-DD_{topic}.md`
+- Notebooks saved to: `darci/engineering_notebook/YYYY-MM-DD_{topic}.md`
 
 ## DARCI Roles Quick Reference
 

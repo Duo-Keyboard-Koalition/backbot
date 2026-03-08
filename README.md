@@ -36,7 +36,7 @@ graph TD
 - **[Sentinel](backend/)**: The "Approver." A FastAPI backend that performs semantic analysis and calculates risk scores (0.0 - 1.0) across 4 dimensions: Loop Detection, Goal Drift, Confidence (Hedge Words), and Coherence.
 - **[DarCI](darci/)**: The "Driver." An autonomous project manager that coordinates agents, creates tasks, and executes interventions (Reprompt, Rollback, Decompose, Halt).
 - **[Tailbridge](tailbridge/)**: The communication backbone. Uses [Tailscale](https://tailscale.com/) for secure, peer-to-peer agent discovery (`Taila2a`) and chunked file transfers (`TailFS`).
-- **[Scorpion](scorpion/)**: The foundational agent framework. Supports both Python and Go implementations for building specialized workers.
+- **[DarCI Framework](darci/)**: The foundational agent framework. Supports both Python and Go implementations for building specialized workers.
 - **[Frontend](frontend/)**: The `Webguide` dashboard. A React-based interface for real-time risk monitoring and agent telemetry.
 
 ---

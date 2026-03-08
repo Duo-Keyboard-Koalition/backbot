@@ -1,25 +1,25 @@
-"""DarCI agent entry point — Scorpion configured as a DARCI project manager."""
+"""DarCI agent entry point — DarCI configured as a DARCI project manager."""
 import asyncio
 import shutil
 from pathlib import Path
 
-from scorpion.agent.loop import AdkAgentLoop
-from scorpion.bus.queue import MessageBus
-from scorpion.config.loader import load_config
-from scorpion.providers.gemini_provider import GeminiProvider
+from darci.agent.loop import AdkAgentLoop
+from darci.bus.queue import MessageBus
+from darci.config.loader import load_config
+from darci.providers.gemini_provider import GeminiProvider
 
 from darci.config import DarciConfig
 from darci.state.store import TaskStore
 from darci.tools.register import register_darci_tools
 
-DARCI_WORKSPACE = Path("~/.scorpion/darci/workspace").expanduser()
+DARCI_WORKSPACE = Path("~/.darci/darci/workspace").expanduser()
 _PKG_DIR = Path(__file__).parent
 SOUL_SRC = _PKG_DIR / "workspace" / "SOUL.md"
 SKILL_SRC = _PKG_DIR / "workspace" / "skills" / "darci" / "SKILL.md"
 
 
 def _init_workspace(ws: Path) -> None:
-    """Copy DarCI identity files to the Scorpion workspace on first run."""
+    """Copy DarCI identity files to the DarCI workspace on first run."""
     ws.mkdir(parents=True, exist_ok=True)
 
     soul_dst = ws / "SOUL.md"

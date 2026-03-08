@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from scorpion.agent.tools.base import Tool
+from darci.agent.tools.base import Tool
 
 from darci.config import DarciConfig
 

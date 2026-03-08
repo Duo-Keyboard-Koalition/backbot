@@ -3,8 +3,8 @@ import asyncio
 import json
 from typing import Any
 
-from scorpion.agent.tools.base import Tool
-from scorpion.bus.events import InboundMessage
+from darci.agent.tools.base import Tool
+from darci.bus.events import InboundMessage
 
 from darci.config import DarciConfig
 from darci.state.store import TaskStore

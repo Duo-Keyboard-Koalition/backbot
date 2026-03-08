@@ -55,15 +55,28 @@ func NewDiscoveryService(srv *tsnet.Server) (*DiscoveryService, error) {
 	}, nil
 }
 
-// Start begins periodic agent discovery
+// Start begins periodic agent discovery (LEGACY - with port scanning)
+// Deprecated: Use StartPassive for AIP-compatible mode
 func (d *DiscoveryService) Start(interval time.Duration) {
-	log.Printf("[discovery] starting agent discovery (interval: %v)", interval)
-	
+	log.Printf("[discovery] starting agent discovery (interval: %v) - LEGACY MODE", interval)
+
 	d.discoverTimer = time.NewTicker(interval)
 	go d.runDiscovery()
-	
+
 	// Initial discovery
 	go d.discoverOnce()
+}
+
+// StartPassive begins passive agent discovery (no port scanning)
+// Only tracks peers from Tailscale status, doesn't scan ports
+func (d *DiscoveryService) StartPassive(interval time.Duration) {
+	log.Printf("[discovery] starting passive discovery (interval: %v) - AIP MODE", interval)
+
+	d.discoverTimer = time.NewTicker(interval)
+	go d.runDiscoveryPassive()
+
+	// Initial discovery
+	go d.discoverOncePassive()
 }
 
 // Stop halts the discovery service
@@ -266,5 +279,82 @@ func portToService(port int) string {
 		return "https-alt"
 	default:
 		return "unknown"
+	}
+}
+
+// Passive Discovery Methods (AIP-compatible - no port scanning)
+
+func (d *DiscoveryService) runDiscoveryPassive() {
+	for {
+		select {
+		case <-d.discoverTimer.C:
+			d.discoverOncePassive()
+		case <-d.stopChan:
+			return
+		}
+	}
+}
+
+func (d *DiscoveryService) discoverOncePassive() {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	status, err := d.localClient.Status(ctx)
+	if err != nil {
+		log.Printf("[discovery] failed to get status: %v", err)
+		return
+	}
+
+	d.mu.Lock()
+	defer d.mu.Unlock()
+
+	// Mark all agents as offline first
+	for _, agent := range d.agents {
+		agent.Online = false
+	}
+
+	// Discover active peers from Tailscale (no port scanning)
+	for _, peer := range status.Peer {
+		if peer.DNSName == "" {
+			continue
+		}
+
+		hostname := peer.DNSName
+		if len(hostname) > 0 && hostname[len(hostname)-1] == '.' {
+			hostname = hostname[:len(hostname)-1]
+		}
+
+		name := hostname
+		if idx := indexOf(hostname, '.'); idx > 0 {
+			name = hostname[:idx]
+		}
+
+		agent := d.agents[name]
+		if agent == nil {
+			agent = &AgentInfo{
+				Name:     name,
+				Hostname: hostname,
+				Gateways: make([]GatewayInfo, 0),
+			}
+			d.agents[name] = agent
+		}
+
+		if len(peer.TailscaleIPs) > 0 {
+			agent.IP = peer.TailscaleIPs[0].String()
+		}
+		agent.Online = true
+		agent.LastSeen = time.Now()
+
+		// NOTE: No port scanning in passive mode
+		// Gateways remain empty - use AIP registration for capability discovery
+		log.Printf("[discovery] passive: found peer %s (%s)", name, agent.IP)
+	}
+
+	// Remove stale agents (offline for > 5 minutes)
+	for name, agent := range d.agents {
+		if !agent.Online && time.Since(agent.LastSeen) > 5*time.Minute {
+			delete(d.agents, name)
+			log.Printf("[discovery] removed stale peer: %s", name)
+		}
 	}
 }

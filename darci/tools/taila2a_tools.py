@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 import httpx
-from scorpion.agent.tools.base import Tool
+from darci.agent.tools.base import Tool
 
 from darci.config import DarciConfig
 from darci.state.store import TaskStore

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"strings"
-	"time"
 
 	"darci-go/darci/state"
 )
@@ -84,7 +83,10 @@ func (t *TaskCreateTool) Execute(ctx context.Context, args map[string]interface{
 		}
 	}
 
-	task := t.store.CreateNew(title, description, priority, labels, dependencies)
+	task, err := t.store.CreateNew(title, description, priority, labels, dependencies)
+	if err != nil {
+		return "", fmt.Errorf("failed to create task: %w", err)
+	}
 
 	return fmt.Sprintf("Task created: %s\nTitle: %s\nPriority: %s | Status: %s\nLabels: %s",
 		task.ID, task.Title, task.Priority, task.Status, strings.Join(task.Labels, ", ")), nil
@@ -152,8 +154,8 @@ func (t *TaskUpdateTool) Execute(ctx context.Context, args map[string]interface{
 		return fmt.Sprintf("Error: no fields to update for %s", taskID), nil
 	}
 
-	task := t.store.Update(taskID, updates)
-	if task == nil {
+	task, err := t.store.Update(taskID, updates)
+	if err != nil || task == nil {
 		return fmt.Sprintf("Error: task %s not found", taskID), nil
 	}
 
@@ -207,8 +209,8 @@ func (t *TaskQueryTool) Execute(ctx context.Context, args map[string]interface{}
 	priority, _ := args["priority"].(string)
 	label, _ := args["label"].(string)
 
-	tasks := t.store.Query(status, priority, label)
-	if len(tasks) == 0 {
+	tasks, err := t.store.Query(status, priority, label)
+	if err != nil || len(tasks) == 0 {
 		return "No tasks found matching the query.", nil
 	}
 
@@ -253,8 +255,8 @@ func (t *StatusReportTool) Parameters() map[string]interface{} {
 }
 
 func (t *StatusReportTool) Execute(ctx context.Context, args map[string]interface{}) (string, error) {
-	tasks := t.store.All()
-	if len(tasks) == 0 {
+	tasks, err := t.store.All()
+	if err != nil || len(tasks) == 0 {
 		return "No tasks yet. Use task_create to get started.", nil
 	}
 
@@ -304,7 +306,7 @@ func (t *StatusReportTool) Execute(ctx context.Context, args map[string]interfac
 				responsible = task.Darci.Responsible
 			}
 			risk := "-"
-			if task.SentinelSnapshot != nil && task.SentinelSnapshot.RiskScore > 0 {
+			if task.SentinelSnapshot.RiskScore > 0 {
 				risk = fmt.Sprintf("%.2f", task.SentinelSnapshot.RiskScore)
 			}
 			lines = append(lines, fmt.Sprintf("| %s | %s | %s | %s | %s |",
@@ -366,15 +368,15 @@ func (t *AssignTaskTool) Execute(ctx context.Context, args map[string]interface{
 		return "", fmt.Errorf("task_id, node_name, and goal_description are required")
 	}
 
-	task := t.store.Get(taskID)
-	if task == nil {
+	task, err := t.store.Get(taskID)
+	if err != nil || task == nil {
 		return fmt.Sprintf("Error: task %s not found", taskID), nil
 	}
 
 	t.store.Update(taskID, map[string]interface{}{
 		"status": "in_progress",
 	})
-	t.store.SetAgentAssignment(nodeName, taskID, "responsible")
+	t.store.SetAgentAssignment(nodeName, taskID, "responsible", 0.0, "in_progress")
 
 	directiveResult, err := t.sendTool.Execute(ctx, map[string]interface{}{
 		"dest_node":    nodeName,

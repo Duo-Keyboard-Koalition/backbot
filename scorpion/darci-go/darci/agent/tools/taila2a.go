@@ -68,19 +68,24 @@ func (t *DiscoverAgentsTool) Execute(ctx context.Context, args map[string]interf
 		}
 	}
 
-	now := time.Now().UTC().Format(time.RFC3339)
-	ctx_data := t.store.GetContext()
-	if ctx_data == nil {
-		ctx_data = make(map[string]interface{})
+	now := time.Now().UTC()
+	ctx_data, err := t.store.GetContext()
+	if err != nil || ctx_data == nil {
+		ctx_data = &state.AgentContext{
+			AgentAssignments: make(map[string]*state.AgentAssignment),
+			DarciState: &state.DarciState{
+				ActiveMonitors: []string{},
+			},
+		}
 	}
 
-	darciState, _ := ctx_data["darci_state"].(map[string]interface{})
-	if darciState == nil {
-		darciState = make(map[string]interface{})
+	if ctx_data.DarciState == nil {
+		ctx_data.DarciState = &state.DarciState{
+			ActiveMonitors: []string{},
+		}
 	}
-	darciState["last_discovery"] = now
-	ctx_data["darci_state"] = darciState
-	t.store.UpdateContext(ctx_data)
+	ctx_data.DarciState.LastDiscovery = &now
+	t.store.UpdateContext(map[string]interface{}{"darci_state": ctx_data.DarciState})
 
 	if len(agents) == 0 {
 		return "No agents discovered on the tailnet.", nil

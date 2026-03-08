@@ -296,7 +296,7 @@ This mirrors broader societal issues where "one size fits all" approaches fail t
 
 ### Our Solution: Contextual, Equitable AI Management
 
-SentinelAI implements **ethical pluralism** in agent management through:
+SentinelAI implements **ethical pluralism** in agent management through the **DarCI framework** (Darcy's AI Agent):
 
 #### 1. **Differentiated Risk Assessment**
 Just as we recognize that a wheelchair user needs a ramp while others need stairs, SentinelAI recognizes that different agents and tasks require different monitoring approaches:
@@ -315,7 +315,7 @@ Our 4-strategy intervention system (Reprompt → Rollback → Decompose → Halt
 - **Proportional response:** Low-risk issues get gentle correction; high-risk issues trigger safety halts
 
 #### 3. **Transferable Management Principles**
-The Scorpion agent manages a diverse array of AI agents (OpenClaw, ZeroClaw, Nanobot) using the same principles that effective human managers use with diverse teams:
+The **DarCI agent** (available in both Python and Go) manages a diverse array of AI agents (OpenClaw, ZeroClaw, Nanobot) using the same principles that effective human managers use with diverse teams:
 
 | AI Management Principle | Human Management Parallel |
 |-------------------------|---------------------------|
@@ -346,11 +346,11 @@ This project embodies Canadian values of:
 
 ### Long-Term Vision
 
-SentinelAI's management principles—developed through managing diverse AI agents—provide a **proof of concept** for abolishing monostandardism in broader organizational contexts:
+**DarCI's** management principles—developed through managing diverse AI agents—provide a **proof of concept** for abolishing monostandardism in broader organizational contexts:
 
 ```
 AI Agent Management  →  Human Team Management  →  Organizational Policy  →  Societal Norms
-     (Scorpion)            (Workplace)                (HR Systems)           (Cultural Change)
+     (DarCI)             (Workplace)                (HR Systems)           (Cultural Change)
 ```
 
 By demonstrating that equitable, contextual management produces better outcomes for AI agents, we provide a model for treating humans equitably—recognizing that **fairness requires flexibility, not rigidity**.

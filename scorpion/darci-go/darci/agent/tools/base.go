@@ -2,10 +2,51 @@ package tools
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"darci-go/internal/adk"
 )
+
+// Tool defines the interface for all DarCI tools.
+type Tool interface {
+	Name() string
+	Description() string
+	Parameters() map[string]interface{}
+	Execute(ctx context.Context, args map[string]interface{}) (string, error)
+}
+
+// ToAdkTool adapts a DarCI Tool to the adk.Tool interface.
+func ToAdkTool(tool Tool) adk.Tool {
+	return &adkToolAdapter{tool: tool}
+}
+
+// adkToolAdapter adapts a Tool to the adk.Tool interface.
+type adkToolAdapter struct {
+	tool Tool
+}
+
+func (a *adkToolAdapter) Name() string {
+	return a.tool.Name()
+}
+
+func (a *adkToolAdapter) Description() string {
+	return a.tool.Description()
+}
+
+func (a *adkToolAdapter) Run(ctx context.Context, input map[string]string) (string, error) {
+	// Convert map[string]string to map[string]interface{}
+	args := make(map[string]interface{}, len(input))
+	for k, v := range input {
+		// Try to parse as JSON for complex types
+		var val interface{}
+		if err := json.Unmarshal([]byte(v), &val); err != nil {
+			val = v
+		}
+		args[k] = val
+	}
+	return a.tool.Execute(ctx, args)
+}
 
 // BaseTool provides common functionality for all tools.
 type BaseTool struct {

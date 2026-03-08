@@ -4,6 +4,7 @@ import (
 	"context"
 	"sync"
 
+	"darci-go/darci/bus"
 	"darci-go/internal/adk"
 )
 
@@ -14,15 +15,22 @@ type AdkAgentLoop struct {
 	context *ContextBuilder
 	memory  *MemoryStore
 	skills  *SkillsLoader
+	Bus     *bus.MessageBus
+	Tools   *adk.ToolRegistry
 }
 
 // NewAdkAgentLoop creates a new agent loop.
 func NewAdkAgentLoop(model adk.Model, tools *adk.ToolRegistry, systemPrompt string) *AdkAgentLoop {
+	if tools == nil {
+		tools = adk.NewToolRegistry()
+	}
 	return &AdkAgentLoop{
 		agent:   adk.NewAgent(model, tools, systemPrompt, 8),
 		context: NewContextBuilder(),
 		memory:  NewMemoryStore(),
 		skills:  NewSkillsLoader(),
+		Bus:     bus.NewMessageBus(100),
+		Tools:   tools,
 	}
 }
 

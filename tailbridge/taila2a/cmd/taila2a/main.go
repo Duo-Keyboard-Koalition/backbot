@@ -158,23 +158,6 @@ func runAgnes() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/inbound", controller.HandleInbound)
-	mux.HandleFunc("/agents", controller.HandleAgents)
-	mux.HandleFunc("/status", func(w http.ResponseWriter, r *http.Request) {
-		statusView := views.NewStatusView()
-		status := map[string]interface{}{
-			"name":     cfg.Name,
-			"hostname": cfg.Name,
-			"online":   true,
-		}
-		statusView.Render(w, status)
-	})
-	
-	// Trigger endpoints
-	mux.HandleFunc("/trigger/status", triggerController.HandleTriggerStatus)
-	mux.HandleFunc("/trigger/manual", triggerController.HandleTriggerManual)
-	mux.HandleFunc("/trigger/stop", triggerController.HandleTriggerStop)
-	mux.HandleFunc("/trigger/notifications", triggerController.HandleNotifications)
-	mux.HandleFunc("/trigger/notifications/clear", triggerController.HandleClearNotifications)
 
 	httpSrv := &http.Server{
 		Handler:      mux,
@@ -198,6 +181,21 @@ func runAgnes() {
 func runOutboundServer(localListen, name string, peerInboundPort int, tailnetClient *http.Client, controller *controllers.Taila2aController, triggerController *controllers.TriggerController) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/send", controller.HandleSend)
+	
+	// Agents
+	mux.HandleFunc("/agents", controller.HandleAgents)
+	mux.HandleFunc("/status", func(w http.ResponseWriter, r *http.Request) {
+		// Just hardcode a basic status handler for now
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(fmt.Sprintf(`{"name": "%s", "hostname": "%s", "online": true}`, name, name)))
+	})
+
+	// Trigger endpoints
+	mux.HandleFunc("/trigger/status", triggerController.HandleTriggerStatus)
+	mux.HandleFunc("/trigger/manual", triggerController.HandleTriggerManual)
+	mux.HandleFunc("/trigger/stop", triggerController.HandleTriggerStop)
+	mux.HandleFunc("/trigger/notifications", triggerController.HandleNotifications)
+	mux.HandleFunc("/trigger/notifications/clear", triggerController.HandleClearNotifications)
 	
 	// Endpoint to simulate buffer increase (for testing)
 	mux.HandleFunc("/buffer/add", func(w http.ResponseWriter, r *http.Request) {

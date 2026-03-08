@@ -220,7 +220,18 @@ class GeminiProvider(LLMProvider):
                 continue
 
         system_instruction = "\n\n".join(system_parts) if system_parts else None
-        return system_instruction, contents
+        
+        # Merge consecutive turns of the same role to strictly satisfy Gemini's alternating role constraint
+        merged_contents: list[types.Content] = []
+        for c in contents:
+            if not merged_contents:
+                merged_contents.append(c)
+            elif merged_contents[-1].role == c.role:
+                merged_contents[-1].parts.extend(c.parts)
+            else:
+                merged_contents.append(c)
+
+        return system_instruction, merged_contents
 
     @staticmethod
     def _user_content_to_parts(content: Any) -> list[types.Part]:

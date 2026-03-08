@@ -13,7 +13,13 @@ import (
 	"github.com/codejedi-ai/kaggle-for-tensors/tailscale-app/buffer"
 )
 
-var discoverySvc *DiscoveryService
+var (
+	discoverySvc *DiscoveryService
+	registry     *AgentRegistry
+	aipHandlers  *AIPHandlers
+	handshakeSvc *HandshakeService
+	bufferSvc    *buffer.BufferService
+)
 
 func runBridge() {
 	cfg, err := loadConfig()
@@ -28,13 +34,25 @@ func runBridge() {
 	}
 	defer srv.Close()
 
-	// Initialize discovery service
-	discoverySvc, err = NewDiscoveryService(srv)
+	// Initialize agent registry (AIP - Agent Identification Protocol)
+	// This replaces auto-discovery with explicit agent registration
+	registry, err = NewAgentRegistry(cfg.StateDir, cfg.BridgeName)
 	if err != nil {
-		log.Fatalf("Failed to create discovery service: %v", err)
+		log.Fatalf("Failed to create agent registry: %v", err)
 	}
-	// Start discovery with 30-second interval
-	discoverySvc.Start(30 * time.Second)
+	log.Printf("[aip] agent registry initialized (bridge=%s)", cfg.BridgeName)
+
+	// Initialize handshake service for challenge-response agent verification
+	// Load agent secrets from config (in production, use secure secret management)
+	agentSecrets := loadAgentSecrets(cfg.StateDir)
+	handshakeSvc = NewHandshakeService(cfg.BridgeName, agentSecrets)
+	handshakeSvc.StartCleanup(1*time.Minute, make(chan struct{}))
+	log.Printf("[handshake] service initialized with %d agent secrets", len(agentSecrets))
+
+	// Initialize AIP HTTP handlers
+	aipHandlers = NewAIPHandlers(registry)
+	// Add handshake handler for agent-side endpoint
+	handshakeHandler := NewHandshakeHandler(handshakeSvc, "", "") // Agent ID/secret set per-agent
 
 	tailnetClient := tsHTTPClient(srv, 20*time.Second)
 	localClient := &http.Client{Timeout: 20 * time.Second}
@@ -68,12 +86,30 @@ func runBridge() {
 	}
 
 	mux := http.NewServeMux()
+
+	// Original endpoints
 	mux.HandleFunc("/inbound", makeInboundHandler(cfg.BridgeName, cfg.LocalAgentURL, localClient))
 	mux.HandleFunc("/agents", makeAgentsHandler())
+
+	// Buffer service endpoints
 	mux.HandleFunc("/buffer/stats", makeBufferStatsHandler())
 	mux.HandleFunc("/buffer/messages", makeBufferMessagesHandler())
 	mux.HandleFunc("/buffer/retry", makeBufferRetryHandler())
 	mux.HandleFunc("/buffer/clear", makeBufferClearHandler())
+
+	// AIP (Agent Identification Protocol) endpoints
+	// These replace auto-discovery with explicit registration
+	mux.HandleFunc("/aip/register", aipHandlers.HandleRegister)
+	mux.HandleFunc("/aip/heartbeat", aipHandlers.HandleHeartbeat)
+	mux.HandleFunc("/aip/pair", aipHandlers.HandlePair)
+	mux.HandleFunc("/aip/agents", aipHandlers.HandleListAgents)
+	mux.HandleFunc("/aip/approve/", aipHandlers.HandleApproveAgent)
+	mux.HandleFunc("/aip/reject/", aipHandlers.HandleRejectAgent)
+
+	// tsA2A Handshake endpoints
+	// Challenge-response verification for agent identification
+	mux.HandleFunc("/aip/handshake", handshakeHandler.HandleHandshake)
+	mux.HandleFunc("/aip/handshake-probe", handshakeHandler.HandleHandshakeProbe)
 
 	httpSrv := &http.Server{
 		Handler:      mux,
@@ -83,7 +119,10 @@ func runBridge() {
 	}
 
 	log.Printf("bridge node %q listening on tailnet :%d (state=%s)", cfg.BridgeName, cfg.InboundPort, cfg.StateDir)
-	log.Printf("discovery service started - agents available at /agents endpoint")
+	log.Printf("[aip] Agent Identification Protocol enabled - register agents at /aip/register")
+	log.Printf("[aip] list agents: GET /aip/agents, approve: POST /aip/approve/{agent_id}")
+	log.Printf("[handshake] tsA2A handshake enabled at /aip/handshake")
+	log.Printf("[discovery] legacy mode: passive only - no network port scanning")
 	log.Printf("buffer service initialized - stats available at /buffer/stats")
 	if err := httpSrv.Serve(ln); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("bridge serve failed: %v", err)

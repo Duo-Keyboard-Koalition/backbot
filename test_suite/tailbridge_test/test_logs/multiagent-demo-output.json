@@ -1,0 +1,109 @@
+{
+  "timestamp": "2026-03-08T05:09:24.051465",
+  "agents": {
+    "agent1": {
+      "hostname": "agent1",
+      "tailscale_ip": "100.76.142.10",
+      "local_ip": "172.28.0.2",
+      "capabilities": [
+        "file_send",
+        "file_receive",
+        "chat",
+        "command"
+      ]
+    },
+    "agent2": {
+      "hostname": "agent2",
+      "tailscale_ip": "100.89.156.23",
+      "local_ip": "172.28.0.3",
+      "capabilities": [
+        "file_receive",
+        "chat",
+        "stream"
+      ]
+    },
+    "agent3": {
+      "hostname": "agent3",
+      "tailscale_ip": "100.104.67.89",
+      "local_ip": "172.28.0.4",
+      "capabilities": [
+        "file_send",
+        "file_receive",
+        "chat",
+        "command",
+        "stream"
+      ]
+    }
+  },
+  "chat_logs": {
+    "agent1": [
+      {
+        "from": "agent1",
+        "to": "agent2",
+        "content": "Hello Agent 2! This is Agent 1 initiating contact over Tailscale. Can you confirm receipt?",
+        "type": "chat",
+        "timestamp": "2026-03-08T05:09:24.050737"
+      },
+      {
+        "from": "agent1",
+        "to": "agent3",
+        "content": "Agent 3, please execute diagnostic scan and report status. This is a priority directive.",
+        "type": "directive",
+        "timestamp": "2026-03-08T05:09:24.050737"
+      },
+      {
+        "from": "agent1",
+        "to": "all",
+        "content": "ATTENTION ALL AGENTS: Multi-agent communication test successful. Tailscale network verified. All agents operational. Test sequence complete.",
+        "type": "directive",
+        "timestamp": "2026-03-08T05:09:24.050737"
+      }
+    ],
+    "agent2": [
+      {
+        "from": "agent2",
+        "to": "agent1",
+        "content": "Agent 1, this is Agent 2. Message received loud and clear! Tailscale connection stable at 100.89.156.23. I confirm communication is established.",
+        "type": "chat",
+        "timestamp": "2026-03-08T05:09:24.050737"
+      },
+      {
+        "from": "agent2",
+        "to": "agent3",
+        "content": "Agent 3, Agent 2 here. Let's coordinate on the next task. I'll handle data collection, you handle analysis. Agreed?",
+        "type": "chat",
+        "timestamp": "2026-03-08T05:09:24.050737"
+      },
+      {
+        "from": "agent2",
+        "to": "all",
+        "content": "Agent 2 acknowledging. Communication test successful. Network stable at 100.89.156.23. Ready for production tasks.",
+        "type": "status",
+        "timestamp": "2026-03-08T05:09:24.050737"
+      }
+    ],
+    "agent3": [
+      {
+        "from": "agent3",
+        "to": "agent1",
+        "content": "Agent 1, diagnostic complete. All systems nominal. Network connectivity: 100%. Tailscale interface active at 100.104.67.89. Ready for task assignment.",
+        "type": "status",
+        "timestamp": "2026-03-08T05:09:24.050737"
+      },
+      {
+        "from": "agent3",
+        "to": "agent2",
+        "content": "Agent 2, agreement confirmed. I'll prepare the analysis pipeline. Send data to my endpoint at 100.104.67.89 when ready. Standing by.",
+        "type": "chat",
+        "timestamp": "2026-03-08T05:09:24.050737"
+      },
+      {
+        "from": "agent3",
+        "to": "all",
+        "content": "Agent 3 acknowledging. All systems green. Tailscale connection stable at 100.104.67.89. Awaiting further instructions.",
+        "type": "status",
+        "timestamp": "2026-03-08T05:09:24.050737"
+      }
+    ]
+  }
+}

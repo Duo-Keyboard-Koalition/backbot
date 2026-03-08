@@ -16,6 +16,7 @@ import (
 	"github.com/codejedi-ai/kaggle-for-tensors/tailscale-app/internal/controllers"
 	"github.com/codejedi-ai/kaggle-for-tensors/tailscale-app/internal/models"
 	"github.com/codejedi-ai/kaggle-for-tensors/tailscale-app/internal/views"
+	"github.com/codejedi-ai/kaggle-for-tensors/tailscale-app/cmd/taila2a/tui"
 )
 
 const Version = "0.2.0"
@@ -46,6 +47,11 @@ func main() {
 		}
 	case "run":
 		runAgnes()
+	case "tui":
+		if err := runTUI(); err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
 	case "version":
 		fmt.Printf("agnes version %s\n", Version)
 	case "help":
@@ -55,6 +61,21 @@ func main() {
 		printUsage()
 		os.Exit(1)
 	}
+}
+
+func runTUI() error {
+	cfg, err := models.LoadConfig()
+	if err != nil {
+		return fmt.Errorf("failed to load config: %v", err)
+	}
+
+	port := cfg.PeerInboundPort
+	if port == 0 {
+		port = 8080 // Default fallback port
+	}
+
+	fmt.Printf("Starting SentinelAI TUI connected to localhost:%d\n", port)
+	return tui.Run(port)
 }
 
 func runAgnes() {
@@ -303,6 +324,7 @@ func printUsage() {
 	fmt.Println("Usage:")
 	fmt.Println("  taila2a init    Initialize configuration interactively")
 	fmt.Println("  taila2a run     Start taila2a (default)")
+	fmt.Println("  taila2a tui     Start the Bubbletea dashboard")
 	fmt.Println("  taila2a version Show version information")
 	fmt.Println("  taila2a help    Show this help message")
 	fmt.Println()

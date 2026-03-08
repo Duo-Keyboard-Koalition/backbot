@@ -1,0 +1,13 @@
+{
+  "tagOwners": {
+    "tag:bridge": ["autogroup:admin"]
+  },
+  "acls": [
+    {
+      "action": "accept",
+      "src": ["tag:bridge"],
+      "dst": ["tag:bridge:8001"]
+    }
+  ],
+  "ssh": []
+}

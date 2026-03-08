@@ -143,6 +143,7 @@ func runAgnes() {
 		discoverySvc,
 		tailnetClient,
 		localClient,
+		tuiNotifier,
 	)
 
 	// Initialize trigger controller

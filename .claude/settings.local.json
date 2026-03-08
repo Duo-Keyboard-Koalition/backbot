@@ -2,7 +2,15 @@
   "permissions": {
     "allow": [
       "Bash(grep:*)",
-      "Bash(xargs wc:*)"
+      "Bash(xargs wc:*)",
+      "Read(//Users/anthonyzhdanov/.taila2a/**)",
+      "Bash(go build:*)",
+      "Read(//Users/anthonyzhdanov/.scorpion/**)",
+      "Bash(pip show:*)",
+      "Bash(python3:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(echo:*)"
     ]
   }
 }

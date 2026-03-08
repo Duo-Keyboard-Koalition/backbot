@@ -18,11 +18,11 @@ from scorpion.channels.base import BaseChannel
 from scorpion.config.schema import TelegramConfig, FLASH_MODEL
 
 
-_USERS_FILE = Path.home() / ".scorpion" / "users.json"
+_USERS_FILE = Path.home() / ".scorpion-python" / "users.json"
 
 
 def _track_user(user) -> dict:
-    """Persist a Telegram user's info to ~/.scorpion/users.json. Returns {is_new, record}."""
+    """Persist a Telegram user's info to ~/.scorpion-python/users.json. Returns {is_new, record}."""
     try:
         users = json.loads(_USERS_FILE.read_text()) if _USERS_FILE.exists() else {}
         uid = str(user.id)
@@ -498,9 +498,9 @@ class TelegramChannel(BaseChannel):
 
                 # Voice/audio → media/voicemessage/{senderID}/
                 if media_type in ("voice", "audio"):
-                    media_dir = Path.home() / ".scorpion" / "media" / "voicemessage" / str(user.id)
+                    media_dir = Path.home() / ".scorpion-python" / "media" / "voicemessage" / str(user.id)
                 else:
-                    media_dir = Path.home() / ".scorpion" / "media"
+                    media_dir = Path.home() / ".scorpion-python" / "media"
                 media_dir.mkdir(parents=True, exist_ok=True)
 
                 ts = datetime.utcnow().strftime("%Y%m%d_%H%M%S")

@@ -909,6 +909,17 @@ PRs welcome! The codebase is intentionally small and readable. 🤗
   <img src="https://contrib.rocks/image?repo=HKUDS/scorpion&max=100&columns=12&updated=20260210" alt="Contributors" />
 </a>
 
+## Engineering Notes
+
+For implementation details and development history:
+
+| Topic | Document |
+|-------|----------|
+| TUI Agent Test Results | [`../engineering_notebook/python/2026-03-07_tui_agent_test_results.md`](../engineering_notebook/python/2026-03-07_tui_agent_test_results.md) |
+| Telegram Migration Status | [`../engineering_notebook/shared/2026-03-07_telegram_migration_status.md`](../engineering_notebook/shared/2026-03-07_telegram_migration_status.md) |
+
+Main engineering notebook: [`../engineering_notebook/README.md`](../engineering_notebook/README.md)
+
 
 ## ⭐ Star History
 

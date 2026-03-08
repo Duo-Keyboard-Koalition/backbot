@@ -114,7 +114,7 @@ class ChannelsConfig(Base):
 class AgentDefaults(Base):
     """Default agent configuration."""
 
-    workspace: str = "~/.scorpion/workspace"
+    workspace: str = "~/.scorpion-python/workspace"
     model: str = FLASH_MODEL  # Centralized model config
     provider: str = "gemini"  # Gemini-only core
     max_tokens: int = 8192

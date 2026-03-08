@@ -88,7 +88,7 @@ def _init_prompt_session() -> None:
     except Exception:
         pass
 
-    history_file = Path.home() / ".scorpion" / "history" / "cli_history"
+    history_file = Path.home() / ".scorpion-python" / "history" / "cli_history"
     history_file.parent.mkdir(parents=True, exist_ok=True)
 
     _PROMPT_SESSION = PromptSession(
@@ -193,7 +193,7 @@ def onboard():
     
     console.print(f"\n{__logo__} scorpion is ready!")
     console.print("\nNext steps:")
-    console.print("  1. Add your Gemini API key to [cyan]~/.scorpion/config.json[/cyan]")
+    console.print("  1. Add your Gemini API key to [cyan]~/.scorpion-python/config.json[/cyan]")
     console.print("     Get one at: https://aistudio.google.com/apikey")
     console.print("  2. Chat: [cyan]scorpion agent -m \"Hello!\"[/cyan]")
     console.print("\n[dim]Want Telegram? See: https://github.com/HKUDS/scorpion#-chat-apps[/dim]")
@@ -211,7 +211,7 @@ def _make_provider(config: Config):
 
     if not (p and p.api_key):
         console.print("[red]Error: No Gemini API key configured.[/red]")
-        console.print("Set one in ~/.scorpion/config.json under providers.gemini.api_key")
+        console.print("Set one in ~/.scorpion-python/config.json under providers.gemini.api_key")
         raise typer.Exit(1)
 
     return GeminiProvider(

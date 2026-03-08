@@ -13,7 +13,7 @@ from loguru import logger
 
 from scorpion.agent.tools.base import Tool
 
-_MEDIA_ROOT = Path.home() / ".scorpion" / "media"
+_MEDIA_ROOT = Path.home() / ".scorpion-python" / "media"
 
 
 def _get_gemini_key() -> str:

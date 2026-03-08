@@ -75,7 +75,7 @@ class WebSearchTool(Tool):
         if not self.api_key:
             return (
                 "Error: Brave Search API key not configured. "
-                "Set it in ~/.scorpion/config.json under tools.web.search.apiKey "
+                "Set it in ~/.scorpion-python/config.json under tools.web.search.apiKey "
                 "(or export BRAVE_API_KEY), then restart the gateway."
             )
         

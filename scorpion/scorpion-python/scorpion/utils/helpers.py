@@ -12,13 +12,13 @@ def ensure_dir(path: Path) -> Path:
 
 
 def get_data_path() -> Path:
-    """~/.scorpion data directory."""
-    return ensure_dir(Path.home() / ".scorpion")
+    """~/.scorpion-python data directory."""
+    return ensure_dir(Path.home() / ".scorpion-python")
 
 
 def get_workspace_path(workspace: str | None = None) -> Path:
-    """Resolve and ensure workspace path. Defaults to ~/.scorpion/workspace."""
-    path = Path(workspace).expanduser() if workspace else Path.home() / ".scorpion" / "workspace"
+    """Resolve and ensure workspace path. Defaults to ~/.scorpion-python/workspace."""
+    path = Path(workspace).expanduser() if workspace else Path.home() / ".scorpion-python" / "workspace"
     return ensure_dir(path)
 
 

@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Duo-Keyboard-Koalition/AuraFlow/scorpion-go/internal/adk"
+	"scorpion-go/internal/adk"
 )
 
 func main() {

@@ -8,7 +8,7 @@ from scorpion.config.schema import Config
 
 def get_config_path() -> Path:
     """Get the default configuration file path."""
-    return Path.home() / ".scorpion" / "config.json"
+    return Path.home() / ".scorpion-python" / "config.json"
 
 
 def get_data_dir() -> Path:

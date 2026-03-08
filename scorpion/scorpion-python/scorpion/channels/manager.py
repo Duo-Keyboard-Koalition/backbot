@@ -20,7 +20,7 @@ from scorpion.channels.base import BaseChannel
 from scorpion.config.schema import Config, TTS_MODEL
 
 _ELEVENLABS_TTS_URL = "https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
-_TTS_WORKSPACE = Path.home() / ".scorpion" / "workspace"
+_TTS_WORKSPACE = Path.home() / ".scorpion-python" / "workspace"
 _TTS_MAX_CHARS = 4000  # ElevenLabs soft limit per request
 _GEMINI_TTS_MAX_CHARS = 5000  # Gemini TTS limit
 
@@ -48,7 +48,7 @@ async def _elevenlabs_tts(text: str, api_key: str, voice_id: str, chat_id: str =
     try:
         url = _ELEVENLABS_TTS_URL.format(voice_id=voice_id)
         if chat_id:
-            tts_dir = Path.home() / ".scorpion" / "media" / "voicemessage" / str(chat_id)
+            tts_dir = Path.home() / ".scorpion-python" / "media" / "voicemessage" / str(chat_id)
         else:
             tts_dir = _TTS_WORKSPACE
         tts_dir.mkdir(parents=True, exist_ok=True)
@@ -132,7 +132,7 @@ async def _gemini_tts(
             return None
 
         if chat_id:
-            tts_dir = Path.home() / ".scorpion" / "media" / "voicemessage" / str(chat_id)
+            tts_dir = Path.home() / ".scorpion-python" / "media" / "voicemessage" / str(chat_id)
         else:
             tts_dir = _TTS_WORKSPACE
         tts_dir.mkdir(parents=True, exist_ok=True)

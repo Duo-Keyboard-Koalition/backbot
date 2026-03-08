@@ -6,15 +6,16 @@ DEFAULT_CONFIG = {
     "gateway": {
         "mode": "local",
         "port": 18789,
-        "host": "127.0.0.1"
+        "host": "127.0.0.1",
+        "model": "gemini-2.0-flash"
     }
 }
 
 def get_config_path() -> Path:
     home = Path.home()
-    config_dir = home / ".openclaw"
+    config_dir = home / ".backclaw"
     config_dir.mkdir(exist_ok=True)
-    return config_dir / "openclaw.json"
+    return config_dir / "config.json"
 
 def load_config() -> dict:
     path = get_config_path()

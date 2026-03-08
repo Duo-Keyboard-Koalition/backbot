@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Backboard IO - CLI Tools
-Python CLI for Backboard AI Agent Management
+Backclaw - CLI Tools
+Python CLI for Backclaw Agent Management
 """
 
 import click
 import requests
 import json
-from dotenv import load_dotenv
 import os
 import sys
+import subprocess
+import signal
+import time
+from pathlib import Path
+from dotenv import load_dotenv, set_key
 
 # Handle Windows console encoding
 if sys.platform == "win32":
@@ -22,18 +26,45 @@ load_dotenv()
 
 API_KEY = os.getenv("BACKBOARD_API_KEY", "")
 BASE_URL = "https://api.backboard.ai"
+OPENCLAW_DIR = Path.home() / ".backclaw"
+PID_FILE = OPENCLAW_DIR / "gateway.pid"
 
-def get_client():
-    """Create authenticated HTTP client"""
-    return requests.Session()
-
+def ensure_config_dir():
+    OPENCLAW_DIR.mkdir(parents=True, exist_ok=True)
 
 @click.group()
-@click.version_option(version="1.0.0", prog_name="backboard")
+@click.version_option(version="0.1.0", prog_name="backclaw")
 def cli():
-    """Backboard IO - Backboard AI Agent CLI"""
+    """Backclaw - AI Agent Gateway & CLI"""
     pass
 
+# ============ ONBOARD ============
+
+@cli.command("onboard")
+def onboard():
+    """Setup Backclaw with your API key, port, and model"""
+    click.echo("🎨 Welcome to Backclaw Onboarding!")
+    api_key = click.prompt("Please enter your Backboard API Key", type=str)
+    port = click.prompt("Please enter the Gateway Port", type=int, default=18789)
+    model = click.prompt("Please enter the Model ID", type=str, default="gemini-2.0-flash")
+    
+    # Save API key to .env
+    env_path = Path(".env")
+    if not env_path.exists():
+        env_path.touch()
+    
+    set_key(str(env_path), "BACKBOARD_API_KEY", api_key)
+    
+    # Save config to .backclaw/config.json
+    from config import save_config, DEFAULT_CONFIG
+    config = DEFAULT_CONFIG.copy()
+    config["gateway"]["port"] = port
+    config["gateway"]["model"] = model
+    save_config(config)
+    
+    click.echo(f"✅ API Key saved to {env_path}")
+    click.echo(f"✅ Config saved to {OPENCLAW_DIR}/config.json")
+    click.echo(f"🚀 Backclaw is ready on port {port} using {model}!")
 
 # ============ GATEWAY ============
 
@@ -42,357 +73,120 @@ def gateway():
     """Gateway management commands"""
     pass
 
-
-@gateway.command("run")
-def gateway_run():
-    """Start the Backboard IO WebSocket gateway"""
-    import subprocess
-    import sys
-    import os
+@gateway.command("start")
+def gateway_start():
+    """Start the Backclaw WebSocket gateway in the background"""
+    ensure_config_dir()
     
-    click.echo("🚀 Starting Backboard IO WebSocket Gateway...")
-    # Run gateway.py as a subprocess
-    gateway_path = os.path.join(os.path.dirname(__file__), "gateway.py")
-    subprocess.run([sys.executable, gateway_path])
+    if PID_FILE.exists():
+        try:
+            pid = int(PID_FILE.read_text())
+            if sys.platform == "win32":
+                # Check if process exists on Windows
+                process_check = subprocess.run(['tasklist', '/FI', f'PID eq {pid}'], capture_output=True, text=True)
+                if str(pid) in process_check.stdout:
+                    click.echo(f"⚠️ Gateway is already running (PID: {pid})")
+                    return
+            else:
+                os.kill(pid, 0)
+                click.echo(f"⚠️ Gateway is already running (PID: {pid})")
+                return
+        except (ValueError, OSError):
+            pass
 
+    gateway_script = Path(__file__).parent / "gateway.py"
+    
+    # Start process
+    if sys.platform == "win32":
+        # On Windows, we use creationflags to detach
+        process = subprocess.Popen(
+            [sys.executable, str(gateway_script)],
+            creationflags=subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.DETACHED_PROCESS,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            close_fds=True
+        )
+    else:
+        process = subprocess.Popen(
+            [sys.executable, str(gateway_script)],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            preexec_fn=os.setpgrp
+        )
+    
+    PID_FILE.write_text(str(process.pid))
+    click.echo(f"🚀 Backclaw Gateway started (PID: {process.pid})")
+    click.echo(f"📡 Listening on ws://127.0.0.1:18789")
+
+@gateway.command("stop")
+def gateway_stop():
+    """Stop the running Backclaw gateway"""
+    if not PID_FILE.exists():
+        click.echo("❌ No gateway running (PID file not found)")
+        return
+    
+    try:
+        pid = int(PID_FILE.read_text())
+        if sys.platform == "win32":
+            subprocess.run(['taskkill', '/F', '/PID', str(pid)], capture_output=True)
+        else:
+            os.kill(pid, signal.SIGTERM)
+        
+        PID_FILE.unlink()
+        click.echo(f"🛑 Backclaw Gateway stopped (PID: {pid})")
+    except (ValueError, OSError) as e:
+        click.echo(f"❌ Failed to stop gateway: {e}")
+        if PID_FILE.exists():
+            PID_FILE.unlink()
+
+@gateway.command("restart")
+@click.pass_context
+def gateway_restart(ctx):
+    """Restart the Backclaw gateway"""
+    ctx.invoke(gateway_stop)
+    time.sleep(1)
+    ctx.invoke(gateway_start)
+
+# ============ TUI ============
+
+@cli.command("tui")
+def tui_cmd():
+    """Launch the Backclaw TUI"""
+    from tui import main as tui_main
+    click.echo("🎨 Launching Backclaw TUI...")
+    tui_main()
 
 # ============ AGENTS ============
 
-@cli.group()
-def agents():
+@cli.group("agentp")
+def agentp():
     """Agent management commands"""
     pass
 
-
-@agents.command("list")
-@click.option("--json", "as_json", is_flag=True, help="Output as JSON")
-def agents_list(as_json):
+@agentp.command("list")
+def agents_list():
     """List all agents"""
     click.echo("Fetching agents...")
-    
-    # Simulated response for local testing
-    agents_data = {
-        "agents": [
-            {"id": "agent_001", "name": "Assistant", "status": "active"},
-            {"id": "agent_002", "name": "Analyzer", "status": "active"}
-        ]
-    }
-    
-    if as_json:
-        click.echo(json.dumps(agents_data, indent=2))
-    else:
-        click.echo("\n" + "=" * 50)
-        for agent in agents_data.get("agents", []):
-            click.echo(f"  ID: {agent['id']}")
-            click.echo(f"  Name: {agent['name']}")
-            click.echo(f"  Status: {agent['status']}")
-            click.echo("-" * 50)
-        click.echo()
-
-
-@agents.command("create")
-@click.argument("name")
-@click.argument("instructions")
-@click.option("--description", "-d", default="", help="Agent description")
-@click.option("--json", "as_json", is_flag=True, help="Output as JSON")
-def agents_create(name, instructions, description, as_json):
-    """Create a new agent"""
-    click.echo(f"Creating agent '{name}'...")
-    
-    # Simulated response
-    agent_data = {
-        "id": f"agent_{os.urandom(4).hex()}",
-        "name": name,
-        "instructions": instructions,
-        "description": description,
-        "status": "active"
-    }
-    
-    if as_json:
-        click.echo(json.dumps(agent_data, indent=2))
-    else:
-        click.echo(f"\n[OK] Agent created!")
-        click.echo(f"  ID: {agent_data['id']}")
-        click.echo(f"  Name: {agent_data['name']}")
-        click.echo()
-
-
-@agents.command("get")
-@click.argument("agent_id")
-@click.option("--json", "as_json", is_flag=True, help="Output as JSON")
-def agents_get(agent_id, as_json):
-    """Get agent by ID"""
-    click.echo(f"Fetching agent {agent_id}...")
-    
-    # Simulated response
-    agent_data = {
-        "id": agent_id,
-        "name": "Assistant",
-        "instructions": "You are a helpful assistant",
-        "status": "active"
-    }
-    
-    if as_json:
-        click.echo(json.dumps(agent_data, indent=2))
-    else:
-        click.echo("\n" + "=" * 50)
-        click.echo(f"  ID: {agent_data['id']}")
-        click.echo(f"  Name: {agent_data['name']}")
-        click.echo(f"  Instructions: {agent_data['instructions']}")
-        click.echo("=" * 50)
-        click.echo()
-
-
-@agents.command("delete")
-@click.argument("agent_id")
-@click.confirmation_option(prompt="Are you sure you want to delete this agent?")
-def agents_delete(agent_id):
-    """Delete an agent"""
-    click.echo(f"Deleting agent {agent_id}...")
-    click.echo("[OK] Agent deleted!")
-
-
-# ============ TASKS ============
-
-@cli.group()
-def tasks():
-    """Task management commands"""
-    pass
-
-
-@tasks.command("list")
-@click.option("--json", "as_json", is_flag=True, help="Output as JSON")
-def tasks_list(as_json):
-    """List all tasks"""
-    click.echo("Fetching tasks...")
-    
-    tasks_data = {
-        "tasks": [
-            {"id": "task_001", "agent_id": "agent_001", "task": "Analyze data", "status": "completed"},
-            {"id": "task_002", "agent_id": "agent_001", "task": "Generate report", "status": "pending"}
-        ]
-    }
-    
-    if as_json:
-        click.echo(json.dumps(tasks_data, indent=2))
-    else:
-        click.echo("\n" + "=" * 70)
-        for task in tasks_data.get("tasks", []):
-            status_icon = "[OK]" if task["status"] == "completed" else "[..]"
-            click.echo(f"  {status_icon} {task['id']} | Agent: {task['agent_id']} | {task['task'][:30]}")
-        click.echo("=" * 70)
-        click.echo()
-
-
-@tasks.command("create")
-@click.argument("agent_id")
-@click.argument("task")
-@click.option("--priority", "-p", type=click.Choice(["low", "normal", "high"]), default="normal")
-@click.option("--json", "as_json", is_flag=True, help="Output as JSON")
-def tasks_create(agent_id, task, priority, as_json):
-    """Create a new task"""
-    click.echo(f"Creating task for agent {agent_id}...")
-    
-    task_data = {
-        "id": f"task_{os.urandom(4).hex()}",
-        "agent_id": agent_id,
-        "task": task,
-        "priority": priority,
-        "status": "pending"
-    }
-    
-    if as_json:
-        click.echo(json.dumps(task_data, indent=2))
-    else:
-        click.echo(f"\n[OK] Task created!")
-        click.echo(f"  ID: {task_data['id']}")
-        click.echo(f"  Priority: {task_data['priority']}")
-        click.echo()
-
-
-@tasks.command("get")
-@click.argument("task_id")
-@click.option("--json", "as_json", is_flag=True, help="Output as JSON")
-def tasks_get(task_id, as_json):
-    """Get task status"""
-    click.echo(f"Fetching task {task_id}...")
-    
-    task_data = {
-        "id": task_id,
-        "agent_id": "agent_001",
-        "task": "Sample task",
-        "status": "completed",
-        "result": "Task completed successfully"
-    }
-    
-    if as_json:
-        click.echo(json.dumps(task_data, indent=2))
-    else:
-        click.echo("\n" + "=" * 50)
-        click.echo(f"  ID: {task_data['id']}")
-        click.echo(f"  Status: {task_data['status']}")
-        click.echo(f"  Result: {task_data['result']}")
-        click.echo("=" * 50)
-        click.echo()
-
-
-# ============ EXECUTE ============
-
-@cli.command("execute")
-@click.argument("agent_id")
-@click.argument("task")
-@click.option("--json", "as_json", is_flag=True, help="Output as JSON")
-def execute(agent_id, task, as_json):
-    """Execute a task and wait for result"""
-    click.echo(f"Executing task on agent {agent_id}...")
-    
-    # Simulated response
-    result_data = {
-        "id": f"exec_{os.urandom(4).hex()}",
-        "agent_id": agent_id,
-        "task": task,
-        "status": "completed",
-        "result": f"Completed: {task}"
-    }
-    
-    if as_json:
-        click.echo(json.dumps(result_data, indent=2))
-    else:
-        click.echo("\n" + "=" * 50)
-        click.echo(f"[OK] Execution complete!")
-        click.echo(f"  Result: {result_data['result']}")
-        click.echo("=" * 50)
-        click.echo()
-
-
-# ============ CHAT ============
-
-@cli.command("chat")
-@click.argument("agent_id")
-@click.argument("message")
-@click.option("--conversation-id", "-c", default=None, help="Conversation ID")
-@click.option("--json", "as_json", is_flag=True, help="Output as JSON")
-def chat(agent_id, message, conversation_id, as_json):
-    """Send a chat message to an agent"""
-    click.echo(f"Sending message to agent {agent_id}...")
-    
-    response_data = {
-        "message": f"I received: '{message}'",
-        "conversation_id": conversation_id or f"conv_{os.urandom(4).hex()}"
-    }
-    
-    if as_json:
-        click.echo(json.dumps(response_data, indent=2))
-    else:
-        click.echo("\n" + "=" * 50)
-        click.echo(f"Agent: {response_data['message']}")
-        click.echo(f"  Conversation ID: {response_data['conversation_id']}")
-        click.echo("=" * 50)
-        click.echo()
-
-
-# ============ TOOLS ============
-
-@cli.group()
-def tools():
-    """Tool management commands"""
-    pass
-
-
-@tools.command("register")
-@click.argument("name")
-@click.argument("schema")
-@click.option("--description", "-d", default="", help="Tool description")
-@click.option("--json", "as_json", is_flag=True, help="Output as JSON")
-def tools_register(name, schema, description, as_json):
-    """Register a new tool"""
-    click.echo(f"Registering tool '{name}'...")
-    
-    try:
-        schema_obj = json.loads(schema)
-    except json.JSONDecodeError:
-        click.echo("[ERROR] Invalid JSON schema")
-        return
-    
-    tool_data = {
-        "id": f"tool_{os.urandom(4).hex()}",
-        "name": name,
-        "description": description,
-        "schema": schema_obj
-    }
-    
-    if as_json:
-        click.echo(json.dumps(tool_data, indent=2))
-    else:
-        click.echo(f"\n[OK] Tool registered!")
-        click.echo(f"  ID: {tool_data['id']}")
-        click.echo(f"  Name: {tool_data['name']}")
-        click.echo()
-
-
-@tools.command("list")
-@click.option("--json", "as_json", is_flag=True, help="Output as JSON")
-def tools_list(as_json):
-    """List all registered tools"""
-    click.echo("Fetching tools...")
-    
-    tools_data = {
-        "tools": [
-            {"id": "tool_001", "name": "calculator", "description": "Math calculations"},
-            {"id": "tool_002", "name": "search", "description": "Web search"}
-        ]
-    }
-    
-    if as_json:
-        click.echo(json.dumps(tools_data, indent=2))
-    else:
-        click.echo("\n" + "=" * 50)
-        for tool in tools_data.get("tools", []):
-            click.echo(f"  [*] {tool['name']} - {tool['description']}")
-        click.echo("=" * 50)
-        click.echo()
-
-
-# ============ HEALTH ============
-
-@cli.command("health")
-def health():
-    """Check Backboard API health"""
-    click.echo("Checking API health...")
-    click.echo("[OK] Backboard API is healthy")
-
+    # Simulated for now
+    click.echo("\n  - Backclaw (local)")
 
 # ============ REPL ============
 
 @cli.command("repl")
-@click.argument("agent_id", default=None, required=False)
-def repl(agent_id):
+def repl():
     """Start an interactive REPL with an agent"""
-    click.echo("Starting Backboard IO REPL...")
-    click.echo("Type 'quit' or 'exit' to end session\n")
-    
-    if not agent_id:
-        agent_id = "agent_default"
-        click.echo(f"Using default agent: {agent_id}\n")
-    
-    while True:
-        try:
-            user_input = click.prompt("You", prompt_suffix="> ")
-            
-            if user_input.lower() in ('quit', 'exit', 'q'):
-                click.echo("Goodbye!")
-                break
-            
-            click.echo(f"Agent: Processing '{user_input[:50]}...'")
-            click.echo(f"   Response: Task completed.\n")
-            
-        except KeyboardInterrupt:
-            click.echo("\nGoodbye!")
-            break
-        except EOFError:
-            click.echo("\nGoodbye!")
-            break
-
+    click.echo("Starting Backclaw REPL...")
+    # Launcher or embedded repl
+    import asyncio
+    from agent.agent import Agent
+    async def run_chat():
+        agent = Agent(name="Backclaw", api_key=os.getenv("BACKBOARD_API_KEY"))
+        while True:
+            text = input("You> ")
+            if text.lower() in ('q', 'quit', 'exit'): break
+            resp = await agent.invoke(text)
+            print(f"Agent> {resp.content}")
+    asyncio.run(run_chat())
 
 if __name__ == "__main__":
     cli()

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Backboard IO - WebSocket Gateway
+Backclaw - WebSocket Gateway
 Inspired by OpenClaw/NanoClaw architecture
 """
 
@@ -10,9 +10,13 @@ import os
 import subprocess
 import time
 import websockets
+from pathlib import Path
 from dotenv import load_dotenv
 from agent import Agent, Invocation, AgentResponse
 from config import load_config
+
+OPENCLAW_DIR = Path.home() / ".backclaw"
+PID_FILE = OPENCLAW_DIR / "gateway.pid"
 
 load_dotenv()
 
@@ -21,6 +25,7 @@ CONFIG = load_config()
 HOST = CONFIG["gateway"]["host"]
 PORT = CONFIG["gateway"]["port"]
 MODE = CONFIG["gateway"]["mode"]
+MODEL = CONFIG["gateway"].get("model", "gemini-2.0-flash")
 API_KEY = os.getenv("BACKBOARD_API_KEY", "")
 
 # Shared state
@@ -29,11 +34,11 @@ sessions = {}
 
 # Default agent
 default_agent = Agent(
-    name="Backboard",
+    name="Backclaw",
     instructions="You are a helpful AI assistant with tool calling capabilities.",
     api_key=API_KEY,
-    gateway_url=f"http://{HOST}:{PORT}" # Agent still uses HTTP for polling in this version? 
-                                        # Or should we update agent too?
+    model=MODEL,
+    gateway_url=f"http://{HOST}:{PORT}"
 )
 
 async def handle_shell_command(command):
@@ -118,7 +123,7 @@ async def handler(websocket):
         print(f"[-] Client disconnected. Total: {len(clients)}")
 
 async def main():
-    print(f"🚀 Backboard IO WebSocket Gateway")
+    print(f"🚀 Backclaw WebSocket Gateway")
     print(f"📡 Mode: {MODE}")
     print(f"🔗 Listening on ws://{HOST}:{PORT}")
     

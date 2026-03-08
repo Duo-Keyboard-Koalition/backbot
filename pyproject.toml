@@ -1,0 +1,25 @@
+[project]
+name = "backclaw"
+version = "0.1.0"
+description = "A powerful AI agent gateway and TUI"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "backboard-sdk>=1.5.0",
+    "websockets>=12.0",
+    "textual>=0.50.0",
+    "click>=8.0.0",
+    "python-dotenv>=1.0.0",
+    "requests>=2.31.0",
+]
+
+[project.scripts]
+backclaw = "cli:cli"
+
+[tool.setuptools]
+packages = ["agent"]
+py-modules = ["cli", "config", "gateway", "tui"]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"

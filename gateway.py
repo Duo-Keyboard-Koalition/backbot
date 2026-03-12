@@ -11,20 +11,20 @@ import sys
 import signal
 import websockets
 from pathlib import Path
-from dotenv import load_dotenv
 from agent import Agent, Invocation, AgentResponse
 from config import load_config
 
 
-load_dotenv()
 
 # Configuration
 CONFIG = load_config()
-HOST = CONFIG["gateway"]["host"]
-PORT = CONFIG["gateway"]["port"]
-MODE = CONFIG["gateway"]["mode"]
-MODEL = CONFIG["gateway"].get("model", "")
-PROVIDER = CONFIG["gateway"].get("llm_provider", "")
+from config import DEFAULT_CONFIG
+gateway_config = CONFIG.get("gateway", {})
+HOST = gateway_config.get("host", DEFAULT_CONFIG["gateway"]["host"])
+PORT = gateway_config.get("port", DEFAULT_CONFIG["gateway"]["port"])
+MODE = gateway_config.get("mode", DEFAULT_CONFIG["gateway"]["mode"])
+MODEL = gateway_config.get("model", DEFAULT_CONFIG["gateway"]["model"])
+PROVIDER = gateway_config.get("llm_provider", DEFAULT_CONFIG["gateway"]["llm_provider"])
 API_KEY = os.getenv("BACKBOARD_API_KEY", "")
 
 # Shared state
@@ -34,9 +34,10 @@ sessions = {}
 
 def make_agent():
     """Create the default agent from config."""
+    agent_config = CONFIG.get("agent", DEFAULT_CONFIG["agent"])
     kwargs = dict(
-        name="Backclaw",
-        instructions="You are a helpful AI assistant with tool calling capabilities.",
+        name=agent_config.get("name", DEFAULT_CONFIG["agent"]["name"]),
+        instructions=agent_config.get("instructions", DEFAULT_CONFIG["agent"]["instructions"]),
         api_key=API_KEY,
     )
     if MODEL:

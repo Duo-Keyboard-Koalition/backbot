@@ -13,9 +13,11 @@ from gateway import run_server
 
 
 async def chat_loop():
+    from config import load_config, DEFAULT_CONFIG
     config = load_config()
-    host = config["gateway"]["host"]
-    port = config["gateway"]["port"]
+    gateway_config = config.get("gateway", DEFAULT_CONFIG["gateway"])
+    host = gateway_config.get("host", DEFAULT_CONFIG["gateway"]["host"])
+    port = gateway_config.get("port", DEFAULT_CONFIG["gateway"]["port"])
     uri = f"ws://{host}:{port}"
 
     print("\n" + "=" * 50)
@@ -95,16 +97,27 @@ async def chat_loop():
 async def run_tui():
     """Start the gateway server as a background task, then run the TUI."""
     # Start the gateway in the background within this process
-    server_task = asyncio.create_task(run_server())
+    # If the port is already in use (e.g. gateway started with --daemon),
+    # we just ignore the error and connect to the existing gateway.
+    try:
+        server_task = asyncio.create_task(run_server())
+        # Give it a tiny bit of time to try binding
+        await asyncio.sleep(0.1)
+        if server_task.done() and server_task.exception():
+            raise server_task.exception()
+    except OSError:
+        print("[*] Gateway port already in use, connecting to existing gateway...")
+        server_task = None
 
     try:
         await chat_loop()
     finally:
-        server_task.cancel()
-        try:
-            await server_task
-        except asyncio.CancelledError:
-            pass
+        if server_task:
+            server_task.cancel()
+            try:
+                await server_task
+            except (asyncio.CancelledError, OSError):
+                pass
 
 
 def main():

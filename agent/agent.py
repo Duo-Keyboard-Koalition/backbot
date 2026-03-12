@@ -3,12 +3,13 @@ import json
 import re
 import asyncio
 import time
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 from backboard import BackboardClient
 from .core import Tool, ToolCall, AgentResponse, Invocation
 from .loop import process_agent_invocation
 from .tools import ToolManager
-from config import load_config
+from config import load_config, get_config_dir
 
 class Agent:
     """
@@ -18,29 +19,34 @@ class Agent:
     
     def __init__(
         self,
-        name: str,
-        instructions: str = "You are a helpful AI assistant.",
+        name: Optional[str] = None,
+        instructions: Optional[str] = None,
         api_key: Optional[str] = None,
         model: Optional[str] = None,
         llm_provider: Optional[str] = None,
-        base_url: str = "https://api.backboard.ai",
-        gateway_url: str = "http://localhost:18789",
+        base_url: Optional[str] = None,
+        gateway_url: Optional[str] = None,
         memory: Optional[str] = "Auto",
         assistant_id: Optional[str] = None
     ):
-        self.name = name
-        self.instructions = instructions
+        # Load defaults from config
+        from config import DEFAULT_CONFIG
+        config = load_config()
+        
+        self.name = name or config.get("agent", {}).get("name", DEFAULT_CONFIG["agent"]["name"])
+        self.instructions = instructions or config.get("agent", {}).get("instructions", DEFAULT_CONFIG["agent"]["instructions"])
         self.api_key = api_key
         
-        # Load defaults from config if not provided
-        config = load_config()
-        self.model = model or config["gateway"].get("model")
-        self.llm_provider = llm_provider or config["gateway"].get("llm_provider")
+        self.model = model or config.get("gateway", {}).get("model", DEFAULT_CONFIG["gateway"]["model"])
+        self.llm_provider = llm_provider or config.get("gateway", {}).get("llm_provider", DEFAULT_CONFIG["gateway"]["llm_provider"])
         
-        self.base_url = base_url
-        self.gateway_url = gateway_url
+        self.base_url = base_url or config.get("api", {}).get("base_url", DEFAULT_CONFIG["api"]["base_url"])
+        self.gateway_url = gateway_url or config.get("gateway", {}).get("url", DEFAULT_CONFIG["gateway"]["url"])
         self.memory = memory
         self.assistant_id = assistant_id
+        
+        # Load identity from SOUL.md if available
+        self._load_soul()
         
         # Import ToolManager here to avoid circular dependency
         from .tools import ToolManager
@@ -50,6 +56,21 @@ class Agent:
         self.client: Optional[BackboardClient] = None
         self.thread_id: Optional[str] = None
         self._tool_call_counter = 0
+
+    def _load_soul(self):
+        """Load name and instructions from SOUL.md in .backclaw/workplace/"""
+        soul_path = get_config_dir() / "workplace" / "SOUL.md"
+        if soul_path.exists():
+            try:
+                content = soul_path.read_text()
+                name_match = re.search(r'^NAME:\s*(.*)$', content, re.MULTILINE)
+                role_match = re.search(r'^ROLE:\s*(.*)$', content, re.MULTILINE)
+                if name_match:
+                    self.name = name_match.group(1).strip()
+                if role_match:
+                    self.instructions = role_match.group(1).strip()
+            except Exception as e:
+                print(f"[*] Warning: Could not load SOUL.md: {e}")
 
     @property
     def tools(self) -> Dict[str, Tool]:

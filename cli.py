@@ -14,19 +14,13 @@ import subprocess
 import signal
 import time
 from pathlib import Path
-from dotenv import load_dotenv, set_key
+from config import load_config, get_config_dir, DEFAULT_CONFIG
+from dotenv import set_key
 
-# Handle Windows console encoding
-if sys.platform == "win32":
-    import codecs
-    sys.stdout = codecs.getwriter("utf-8")(sys.stdout.buffer, "strict")
-    sys.stderr = codecs.getwriter("utf-8")(sys.stderr.buffer, "strict")
-
-load_dotenv()
-
+config = load_config()
 API_KEY = os.getenv("BACKBOARD_API_KEY", "")
-BASE_URL = "https://api.backboard.ai"
-OPENCLAW_DIR = Path.home() / ".backclaw"
+BASE_URL = config.get("api", {}).get("base_url", DEFAULT_CONFIG["api"]["base_url"])
+OPENCLAW_DIR = get_config_dir()
 PID_FILE = OPENCLAW_DIR / "gateway.pid"
 
 def ensure_config_dir():
@@ -43,10 +37,11 @@ def cli():
 @cli.command("onboard")
 def onboard():
     """Setup Backclaw with your API key, port, and model"""
+    from config import DEFAULT_CONFIG
     click.echo("🎨 Welcome to Backclaw Onboarding!")
     api_key = click.prompt("Please enter your Backboard API Key", type=str)
-    port = click.prompt("Please enter the Gateway Port", type=int, default=18789)
-    model = click.prompt("Please enter the Model ID", type=str, default="gemini-2.0-flash")
+    port = click.prompt("Please enter the Gateway Port", type=int, default=DEFAULT_CONFIG["gateway"]["port"])
+    model = click.prompt("Please enter the Model ID", type=str, default=DEFAULT_CONFIG["gateway"]["model"])
     
     # Save API key to .env
     env_path = Path(".env")
@@ -57,7 +52,9 @@ def onboard():
     
     # Save config to .backclaw/config.json
     from config import save_config, DEFAULT_CONFIG
-    config = DEFAULT_CONFIG.copy()
+    config = load_config()
+    if "gateway" not in config:
+        config["gateway"] = DEFAULT_CONFIG["gateway"].copy()
     config["gateway"]["port"] = port
     config["gateway"]["model"] = model
     save_config(config)
@@ -173,7 +170,7 @@ def repl():
     import asyncio
     from agent.agent import Agent
     async def run_chat():
-        agent = Agent(name="Backclaw", api_key=os.getenv("BACKBOARD_API_KEY"))
+        agent = Agent(api_key=os.getenv("BACKBOARD_API_KEY"))
         while True:
             text = input("You> ")
             if text.lower() in ('q', 'quit', 'exit'): break
